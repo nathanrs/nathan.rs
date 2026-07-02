@@ -58,7 +58,7 @@ Uniform diffusion has no absorbing state: a position can transition an *arbitrar
 
 ## Observations and findings
 
-That's the question [my thesis](/thesis.pdf) started from. My KV caching engine for uniform diffusion ended up, surprisingly, looking almost identical to the popular engines built for masked diffusion (Fast-dLLM in particular).[^masked-caches] Given how differently the two noise processes behave, why should that be? After a lot of experimentation, I found it comes down to two properties of diffusion generation that seem to hold regardless of the noise process.[^thesis]
+In my [master's thesis](/thesis.pdf), I investigated KV cache behavior for uniform models. My KV caching engine for uniform diffusion ended up, surprisingly, looking very similar to the solutions built for masked diffusion (Fast-dLLM in particular).[^masked-caches] Given how differently the two noise processes behave, why should that be? After a lot of experimentation, I found it comes down to two properties of diffusion generation that seem to hold regardless of the noise process.[^thesis]
 
 ### Left-to-right decoding preference
 
@@ -93,7 +93,14 @@ Uniform diffusion has none of that structure, and the same behavior shows up any
 
 ## Citation
 
-> Barry, Nathan. "KV Caching for dLLMs is Noise Process Agnostic". nathan.rs (Jun 2026). https://nathan.rs/posts/dllm-kv-caching.
+Please cite this work as:
+
+```
+Barry, Nathan. "KV Caching for dLLMs is Noise Process Agnostic".
+nathan.rs (Jun 2026). https://nathan.rs/posts/dllm-kv-caching.
+```
+
+Or use the BibTex citation:
 
 ```
 @article{barry2026dllmcache,

@@ -415,9 +415,14 @@ Why exponentiate back? Perplexity has an intuitive interpretation: it represents
 
 
 ## Citation
+Please cite this work as:
 
+```
+Barry, Nathan. "Language Modeling Without Neural Networks".
+nathan.rs (Jan 2026). https://nathan.rs/posts/unbounded-n-gram.
+```
 
-> Barry, Nathan. "Language Modeling Without Neural Networks". nathan.rs (Jan 2026). https://nathan.rs/posts/unbounded-n-gram.
+Or use the BibTex citation:
 
 ```
 @article{barry2026ngram,
