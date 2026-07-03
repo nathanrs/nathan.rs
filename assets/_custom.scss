@@ -127,7 +127,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     }
 
     .site-page-shell {
-        max-width: 72rem;
+        max-width: 70rem;
         margin: 0 auto;
         padding: clamp(3rem, 7vw, 6rem)
             clamp(#{$padding-16}, 5vw, #{$padding-16 * 2})
@@ -145,7 +145,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
 
     .site-home-grid,
     .site-combined-home {
-        max-width: 72rem;
+        max-width: 70rem;
     }
 
     .site-home-main {
@@ -330,7 +330,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
 
     .post-reading-grid {
         display: grid;
-        grid-template-columns: minmax(10rem, 15rem) minmax(0, 42rem) minmax(
+        grid-template-columns: minmax(10rem, 15rem) minmax(0, 40rem) minmax(
                 10rem,
                 15rem
             );
