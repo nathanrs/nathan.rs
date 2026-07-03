@@ -163,7 +163,7 @@ As you can see, `dx serve` and `dx build --release` now builds everything in `/d
 ## Interacting with JS Libraries from Rust
 The wasm-bindgen project provides developers with a few tools for interacting with JS and browser APIs.
 
-The web-sys crate contains bindings to browser web APIs. This includes things like the Document Object Model (DOM), HTML elements, browser-specific functions like window.fetch, and more. I use this extensively for my Conway's Game of Life implementation, which you can find the source code [here](https://github.com/nathan-barry/nathan-barry.github.io/blob/3af983098dddfc21a81a3e1d66512b0babcfe031/src/projects/game_of_life.rs). js-sys is what we're looking for, which is quite easy to use. It allows us to interact with JavaScript code directly from a rust file.
+The web-sys crate contains bindings to browser web APIs. This includes things like the Document Object Model (DOM), HTML elements, browser-specific functions like window.fetch, and more. I use this extensively for my Conway's Game of Life implementation, which you can find the source code [here](https://github.com/nathanrs/rust-site/blob/main/src/projects/game_of_life.rs). js-sys is what we're looking for, which is quite easy to use. It allows us to interact with JavaScript code directly from a rust file.
 
 I mentioned above about loading a JS library via the index.html file. I included a link element that downloads highlight.js' default stylesheet and a script element that downloads the highlight.js library.
 

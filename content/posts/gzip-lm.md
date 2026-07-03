@@ -81,7 +81,7 @@ One detail that matters is that **only the last `tail` bytes of generated output
 
 <br>
 
-You can see the decoding and scoring process in the animation above, which is the same replay shown at the top. The whole thing is one file of pure standard-library Python (just `zlib`). Code's on [GitHub](https://github.com/nathan-barry/gzipt) if you want to play with it.
+You can see the decoding and scoring process in the animation above, which is the same replay shown at the top. The whole thing is one file of pure standard-library Python (just `zlib`). Code's on [GitHub](https://github.com/nathanrs/gzipt) if you want to play with it.
 
 
 

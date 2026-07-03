@@ -110,7 +110,7 @@ Perhaps longer lines overflow (in some sense) and the browser tries to handle th
 
 
 ## Souls Saved
-Below is a list of all the websites that added the fix. If this helped you, file an issue [here](https://github.com/nathan-barry/nathan.rs/issues) and I'll add you!
+Below is a list of all the websites that added the fix. If this helped you, file an issue [here](https://github.com/nathanrs/nathan.rs/issues) and I'll add you!
 
 Website | Date
 --- | ---

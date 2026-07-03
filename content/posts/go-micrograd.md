@@ -299,4 +299,4 @@ data -1.0000 | grad 0.0000
 -----------------------------------------------------------
 ```
 
-You can check out the [github repo here](https://github.com/nathan-barry/go-micrograd) for further implementation details. It contains a much larger model (41 parameters, 3 layers, with tanh activation functions) and the implementation details of the other operations.
+You can check out the [github repo here](https://github.com/nathanrs/go-micrograd) for further implementation details. It contains a much larger model (41 parameters, 3 layers, with tanh activation functions) and the implementation details of the other operations.

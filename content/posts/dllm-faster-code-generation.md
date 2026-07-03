@@ -70,7 +70,7 @@ Memorized:
 - Recite to me the Declaration of Independence, word for word, starting with 'The unanimous Declaration of the'.
 ```
   
-The code for everything can be [found here](https://github.com/nathan-barry/dllm-structured-generation-tests), which additionally includes generated output and metadata for each run. Below are the results:
+The code for everything can be [found here](https://github.com/nathanrs/dllm-structured-generation-tests), which additionally includes generated output and metadata for each run. Below are the results:
 
 ```
 Trivially Structured (Grape):

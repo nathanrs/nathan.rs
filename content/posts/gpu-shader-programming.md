@@ -8,7 +8,7 @@ featured: true
 hero: "/images/gpt2-webgl-demo.gif"
 ---
 
-A few weeks back, I implemented GPT-2 using WebGL and shaders ([Github Repo](https://github.com/nathan-barry/gpt2-webgl/tree/main)) which made the front page of [Hacker News](https://news.ycombinator.com/item?id=43870998). Here is a short write-up over what I learned about old-school general-purpose GPU programming over the course of this project! Above is a gif of the final demo, which you can run locally via the github repo above.
+A few weeks back, I implemented GPT-2 using WebGL and shaders ([Github Repo](https://github.com/nathanrs/gpt2-webgl/tree/main)) which made the front page of [Hacker News](https://news.ycombinator.com/item?id=43870998). Here is a short write-up over what I learned about old-school general-purpose GPU programming over the course of this project! Above is a gif of the final demo, which you can run locally via the github repo above.
 
 > *This article appeared on Hacker News. Link to the [discussion here](https://news.ycombinator.com/item?id=44109257).*
     
