@@ -8,7 +8,7 @@ hero: "/images/unbounded-n-gram.gif"
 ---
 
 Generating Shakespeare has become the ["Hello World"](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) of language models.[^1]
-Recently, I've been messing with [alternative language models](https://github.com/nathan-barry/tiny-diffusion) and came across **unbounded n-gram** models. These models are purely statistical and don't require optimizing weights or training.
+Recently, I've been messing with [alternative language models](https://github.com/nathanrs/tiny-diffusion) and came across **unbounded n-gram** models. These models are purely statistical and don't require optimizing weights or training.
 
 A year ago, I read the paper [Infini-gram](https://arxiv.org/abs/2401.17377), which scaled an unbounded n-gram model to trillions of tokens. While their model had applications helping guide neural LLMs during generation, standalone language generation was not explored.
 
@@ -162,7 +162,7 @@ For `BABBC`, it searches for a 6-gram. Since it doesn't appear in the dataset, i
 
 ## Novel Language Generation
 
-I made [tiny-infini-gram](https://github.com/nathan-barry/tiny-infini-gram/tree/main), an efficient unbounded n-gram implementation written in Go, with [Tiny Shakespeare](https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt) as the dataset. The main reason for Go was that it already had an efficient [suffix array implementation](https://pkg.go.dev/index/suffixarray) in its expansive standard library.
+I made [tiny-infini-gram](https://github.com/nathanrs/tiny-infini-gram/tree/main), an efficient unbounded n-gram implementation written in Go, with [Tiny Shakespeare](https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt) as the dataset. The main reason for Go was that it already had an efficient [suffix array implementation](https://pkg.go.dev/index/suffixarray) in its expansive standard library.
 
 **Observation**: One thing I quickly noticed was that the above sampling method often led to output that was **verbatim copied** from the dataset.
 
@@ -330,7 +330,7 @@ KING RICHARD II:
 We pity this young rece
 ```
 
-You can pull the weights and play with the model [here](https://github.com/nathan-barry/tiny-infini-gram). Local inference for 500 tokens only takes roughly 10 seconds on an M1 MacBook Pro.
+You can pull the weights and play with the model [here](https://github.com/nathanrs/tiny-infini-gram). Local inference for 500 tokens only takes roughly 10 seconds on an M1 MacBook Pro.
 
 ### Unbounded N-Gram Perplexity
 

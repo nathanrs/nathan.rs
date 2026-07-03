@@ -69,7 +69,7 @@ disableKinds = ["section"]
   BookSection = 'posts'
 
   # Uncomment and set your repo if you want git commit/edit links
-  BookRepo = 'https://github.com/nathan-barry/nathan.rs'
+  BookRepo = 'https://github.com/nathanrs/nathan.rs'
   BookLastChangeLink = '{{ .Site.Params.BookRepo }}/commit/{{ .GitInfo.Hash }}'
   BookEditLink = '{{ .Site.Params.BookRepo }}/edit/main/{{ .Path }}'
 

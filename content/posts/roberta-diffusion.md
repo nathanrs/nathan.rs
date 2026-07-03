@@ -64,7 +64,7 @@ By introducing variable masking rates (from 0 to 1) and a scheduled sequence of 
 In 2019, [RoBERTa](https://arxiv.org/abs/1907.11692) was released. It was essentially just an enhancement of the original BERT model, with better hyperparameters, data training size, and a more simple training objective (MLM only, removed next sentence prediction).
 
 Here, we use the HuggingFace `transformers` and `dataset` libraries to pull in the original RoBERTa weights, tokenizer, and the Trainer class to easily finetune the model on the WikiText dataset.
-The main code ([full code here](https://github.com/nathan-barry/RoBERTaDiffusion)) looks like this below:
+The main code ([full code here](https://github.com/nathanrs/RoBERTaDiffusion)) looks like this below:
 
 ```python
 # Load and tokenize dataset and instantiate the model
@@ -98,7 +98,7 @@ trainer.save_model("finetuned-roberta-diffusion")
 ```
 
 Currently, we have 10 diffusion steps, so we randomly sample a percentage $p$ out of `mask_probs` (1.0, 0.9, 0.9, ..., 0.1) and mask that percent of the tokens in each batch.
-The custom `diffusion_collator` function ([see code here](https://github.com/nathan-barry/RoBERTaDiffusion/blob/main/finetune.py#L77)) samples one mask-probability `p` from `mask_probs` per batch and sets each token to `<MASK>` with `p` probability.
+The custom `diffusion_collator` function ([see code here](https://github.com/nathanrs/RoBERTaDiffusion/blob/main/finetune.py#L77)) samples one mask-probability `p` from `mask_probs` per batch and sets each token to `<MASK>` with `p` probability.
 
 To be able to condition the generation on a "prompt", we currently never mask the first 16 tokens. That means that during training, each step will always have the first 16 tokens as context for generation.
 
