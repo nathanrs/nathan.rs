@@ -5,7 +5,6 @@ $padding-8: 0.5rem !default;
 $padding-16: 1rem !default;
 
 $body-min-width: 20rem !default;
-$container-max-width: 72rem !default;
 
 $menu-width: 10rem !default;
 $toc-width: 16rem !default;
@@ -25,7 +24,6 @@ $mobile-breakpoint: $menu-width + $body-min-width * 1.2 + $toc-width !default;
 
     --body-font-weight: 400;
     --body-background: white;
-    --body-background-tint: transparent;
     --body-font-color: black;
 
     --border-radius: 0.25rem;
@@ -38,7 +36,6 @@ $mobile-breakpoint: $menu-width + $body-min-width * 1.2 + $toc-width !default;
 // Themes
 @mixin theme-light {
     --body-background: white;
-    --body-background-tint: none;
     --body-font-color: #2c2724;
 
     --color-link: #656565;
@@ -49,23 +46,10 @@ $mobile-breakpoint: $menu-width + $body-min-width * 1.2 + $toc-width !default;
     --gray-100: #f9f9f9;
     --gray-200: #ece9e4;
     --gray-500: #b0aba5;
-
-    @include accent("default", #64748b);
-    @include accent("note", #4486dd);
-    @include accent("tip", #3bad3b);
-    @include accent("important", #8144dd);
-    @include accent("warning", #f59e42);
-    @include accent("caution", #d84747);
-
-    // Fallback for {{< hint >}} shortcodes
-    @include accent("info", #4486dd);
-    @include accent("success", #3bad3b);
-    @include accent("danger", #d84747);
 }
 
 @mixin theme-dark {
     --body-background: #141414;
-    --body-background-tint: none;
 
     --body-font-color: #f0f0f0;
 
@@ -77,30 +61,4 @@ $mobile-breakpoint: $menu-width + $body-min-width * 1.2 + $toc-width !default;
     --gray-100: #1a1a1a;
     --gray-200: #2e2e2e;
     --gray-500: #666666;
-
-    @include accent("default", #64748b);
-    @include accent("note", #4486dd);
-    @include accent("tip", #3bad3b);
-    @include accent("important", #8144dd);
-    @include accent("warning", #f59e42);
-    @include accent("caution", #d84747);
-
-    // Fallback for {{< hint >}} shortcodes
-    @include accent("info", #4486dd);
-    @include accent("success", #3bad3b);
-    @include accent("danger", #d84747);
-}
-
-@mixin theme-auto {
-    @include theme-light;
-
-    @media (prefers-color-scheme: dark) {
-        @include theme-dark;
-    }
-}
-
-// Convenience mixing to declare a color and a transparent tint
-@mixin accent($name, $color, $tint: 0.1) {
-    --color-accent-#{$name}: #{$color};
-    --color-accent-#{$name}-tint: #{rgba($color, $tint)};
 }
