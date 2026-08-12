@@ -6,9 +6,9 @@ featured: true
 hero: "/js/diffusion-noise.js"
 ---
 
-The typical language model is **autoregressive** (AR): it predicts one token at a time, left to right, each token conditioned on the ones before it. This bakes in two limitations: it cannot revise earlier tokens if later context makes them appear wrong, and its latency grows linearly with length, since every token takes its own forward pass.
+The typical language model is **autoregressive** (AR): it predicts one token at a time, left to right, each token conditioned on the ones before it. This bakes in two limitations: it spends one forward pass per token, so latency grows linearly with length regardless of how hard each token is to predict, and it cannot revise earlier tokens if later context makes them appear wrong.
 
-Diffusion language models avoid these problems.[^arch] Generation starts from a sequence of pure noise, and at each step the model predicts a cleaner version of every position at once. Repeat this for a fixed number of steps and the noisy sequence resolves into legible text. Because the whole sequence is refined in parallel, the model can revise any position as it goes.
+Diffusion language models avoid these problems.[^arch] Generation starts from a sequence of pure noise, and at each step the model predicts a cleaner version of every position at once. Repeat this for some number of steps and the noisy sequence resolves into legible text. Because the whole sequence is refined in parallel, the model can revise any position as it goes. It can commit many easy tokens in a single step while spending extra steps on harder ones, distributing decoding compute where it's actually needed, much like speculative decoding does for AR models.
 
 Despite side-stepping these two problems, diffusion language models have one major limitation that makes efficient inference hard: they don't naively support KV caching.
 
