@@ -163,7 +163,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     }
 
     .writing-search {
-        margin-bottom: clamp(#{$padding-16 * 2.5}, 6vw, #{$padding-16 * 6});
+        margin-bottom: clamp(#{$padding-16 * 3.5}, 6vw, #{$padding-16 * 6});
     }
 
     .writing-search-input {
@@ -297,7 +297,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .post-hero {
         width: calc(100vw - 2rem);
         max-width: 48rem;
-        margin: 0 auto clamp(2rem, 4vw, 3.5rem);
+        margin: 0 auto clamp(1rem, 4vw, 3.5rem);
         overflow: hidden;
     }
 
