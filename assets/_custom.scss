@@ -145,7 +145,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
 
     .site-home-grid,
     .site-combined-home {
-        max-width: 70rem;
+        max-width: 64rem;
     }
 
     .site-home-main {
@@ -215,7 +215,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
             margin: 0 0 $padding-8;
             padding-bottom: $padding-4;
             border-bottom: $padding-1 solid var(--gray-200);
-            color: var(--color-link);
+            color: var(--body-font-color);
             font-size: var(--font-size-smallest);
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -242,7 +242,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
         }
 
         .block-year {
-            color: var(--color-link);
+            color: var(--body-font-color);
             font-size: var(--font-size-smallest);
             font-variant-numeric: tabular-nums;
         }
@@ -265,7 +265,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     }
 
     .post-masthead {
-        max-width: 48rem;
+        max-width: 42rem;
         margin: 0 auto;
         padding: clamp(4rem, 8vw, 6rem) $padding-16 clamp(2rem, 5vw, 4rem);
         text-align: center;
