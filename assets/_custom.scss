@@ -267,12 +267,12 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .post-masthead {
         max-width: 42rem;
         margin: 0 auto;
-        padding: clamp(4rem, 8vw, 6rem) $padding-16 clamp(2rem, 5vw, 4rem);
+        padding: clamp(3rem, 6vw, 5rem) $padding-16 clamp(1.5rem, 3vw, 2.5rem);
         text-align: center;
 
         h1 {
             margin: 0;
-            font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+            font-size: clamp(1.5rem, 3vw, 2rem);
             line-height: 1.08;
         }
     }
@@ -297,15 +297,14 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
 
     .post-hero {
         width: calc(100vw - 2rem);
-        max-width: 78rem;
-        margin: 0 auto clamp(2rem, 7vw, 5rem);
+        max-width: 48rem;
+        margin: 0 auto clamp(2rem, 4vw, 3.5rem);
         overflow: hidden;
     }
 
     .post-hero-canvas {
         display: block;
         width: 100%;
-        max-width: 50rem;
         margin: 0 auto;
         background: var(--body-background);
     }
@@ -313,6 +312,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .post-hero-media {
         display: block;
         min-width: 60%;
+        max-width: 100%;
         height: auto;
         object-fit: contain;
         margin: 0 auto;
