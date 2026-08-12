@@ -5,8 +5,6 @@
 </head>
 {{- $isPost := and (eq .Kind "page") (eq .Type "posts") -}}
 <body dir="{{ default "ltr" .Site.Language.LanguageDirection }}" class="site-modern book-kind-{{ .Kind }} book-type-{{ .Type }}{{ with .Layout }} book-layout-{{ . }}{{ end }}{{ if $isPost }} site-post-page{{ end }}">
-  <input type="checkbox" class="hidden toggle" id="menu-control" />
-  <input type="checkbox" class="hidden toggle" id="toc-control" />
   {{ template "theme-toggle" . }}
   <header class="site-top-nav">
     {{ partial "docs/top-nav" . }}

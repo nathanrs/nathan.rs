@@ -8,7 +8,7 @@ html {
 body {
     min-width: $body-min-width;
     color: var(--body-font-color);
-    background: var(--body-background) var(--body-background-tint);
+    background: var(--body-background);
 
     font-weight: var(--body-font-weight);
     text-rendering: optimizeLegibility;
@@ -44,8 +44,7 @@ small {
     @extend .text-small;
 }
 
-:focus-visible,
-input.toggle:focus-visible + label {
+:focus-visible {
     @include outline;
 }
 
@@ -74,13 +73,6 @@ nav ul {
     }
 }
 
-.container {
-    max-width: $container-max-width;
-    margin: 0 auto;
-    padding-top: calc(var(--page-top) + 1rem);
-    gap: 2rem;
-}
-
 .book-icon {
     filter: var(--icon-filter);
 }
@@ -90,12 +82,8 @@ a .book-icon {
     width: 1em;
 }
 
-.book-post {
-    margin-bottom: $padding-16 * 4;
-
-    .book-post-content {
-        margin-top: $padding-16;
-    }
+.book-post .book-post-content {
+    margin-top: $padding-16;
 }
 
 .book-footer {
@@ -110,11 +98,5 @@ a .book-icon {
 
 .book-copyright {
     margin-top: $padding-16;
-}
-
-@media screen and (max-width: $container-max-width) {
-    .container {
-        gap: 0;
-    }
 }
 

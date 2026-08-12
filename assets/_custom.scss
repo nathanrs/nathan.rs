@@ -30,15 +30,11 @@ html:not(.light-mode) {
     cursor: pointer;
     background: none;
     border: none;
-    font-size: var(--font-size-smaller);
+    font-size: inherit;
     font-family: inherit;
     color: inherit;
-    opacity: 0.7;
     padding: 0;
-
-    &:hover {
-        opacity: 1;
-    }
+    flex: 0 0 auto;
 }
 
 .markdown a[href] {
@@ -115,14 +111,7 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
         a {
             flex: 0 0 auto;
             color: inherit;
-            padding: 0;
         }
-    }
-
-    .theme-toggle {
-        flex: 0 0 auto;
-        font-size: inherit;
-        opacity: 1;
     }
 
     .site-page-shell {
@@ -259,10 +248,6 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
         width: 100%;
     }
 
-    .book-post {
-        margin: 0;
-    }
-
     .post-masthead {
         max-width: 42rem;
         margin: 0 auto;
@@ -304,7 +289,6 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .post-hero-canvas {
         display: block;
         width: 100%;
-        margin: 0 auto;
         background: var(--body-background);
     }
 
@@ -385,14 +369,9 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .post-sidenote {
         position: absolute;
         width: 100%;
-        color: var(--body-font-color);
 
         p {
             margin: 0;
-        }
-
-        a {
-            display: inline;
         }
     }
 
@@ -449,10 +428,6 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
     .site-post-page {
         .post-masthead {
             padding-top: $padding-16 * 3;
-        }
-
-        .post-hero {
-            width: calc(100vw - #{$padding-16 * 2});
         }
 
         .post-hero-canvas {
