@@ -40,7 +40,14 @@
 <script>
   (function() {
     var stored = localStorage.getItem('theme');
-    if (stored !== 'dark') document.documentElement.classList.add('light-mode');
+    var systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    var isLight = stored ? stored === 'light' : !systemDark.matches;
+    if (isLight) document.documentElement.classList.add('light-mode');
+    systemDark.addEventListener('change', function(e) {
+      if (localStorage.getItem('theme')) return;
+      document.documentElement.classList.toggle('light-mode', !e.matches);
+      updateIcons();
+    });
     function updateIcons() {
       var isLight = document.documentElement.classList.contains('light-mode');
       document.querySelectorAll('.theme-toggle').forEach(function(btn) {
