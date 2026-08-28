@@ -41,5 +41,5 @@ Bouldering Grade | V8
 Balls Juggled | 4
 Bowling Score | 203 (my proudest one!)
 
-Lastly, check out my super cool and great friends!
-[Alex Kranias](https://alexkranias.com/), [Daniel Kasabov-Nouvion](https://danielkasabov.com/), [Dorsa Rohani](https://dorsarohani.com/), [Annie Hu](https://anniehu.com/), [Manal Sultan](https://www.man-al.net/), [Sid Sabhnani](https://www.sidsabhnani.com/), [Asher Feldman](https://asherfeldman.com/), [Nate Williams](https://nate.town/).
+Lastly, check out the website of my friends!
+[Alex Kranias](https://alexkranias.com/), [Daniel Kasabov-Nouvion](https://danielkasabov.com/), [Dorsa Rohani](https://dorsarohani.com/), [Max Feldman](https://maxfeldman.xyz/), [Asher Feldman](https://asherfeldman.com/), [Manal Sultan](https://www.man-al.net/), [Sid Sabhnani](https://www.sidsabhnani.com/), [Annie Hu](https://anniehu.com/), [Nate Williams](https://nate.town/).
