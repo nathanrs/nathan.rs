@@ -49,6 +49,9 @@ tags:
 > “The day a blind man sees, the first thing he throws away is the stick that has helped him all his life”
 <br>— Unknown
 
+> "All my life I have sacrificed everything — comfort, self-interest, happiness — to my destiny. Destiny must be fulfilled — that is my chief doctrine."
+<br>— Napoleon Bonaparte
+
 > "I do not like broccoli. And I haven't liked it since I was a little kid and my mother made me eat it. And I'm President of the United States, and I'm not going to eat any more broccoli!"
 <br>— George H. W. Bush
 

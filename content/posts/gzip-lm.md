@@ -32,6 +32,8 @@ again; and after it ag .
 
 It turns out, kind of? It's not exactly coherent text, but it clearly *knows* something about the text. Much more than I expected `gzip` to *know*.[^2] So how can a compressor generate this?
 
+> *This article appeared on Hacker News. Link to the [discussion here](https://news.ycombinator.com/item?id=49797323).*
+
 
 
 ## Compression is prediction

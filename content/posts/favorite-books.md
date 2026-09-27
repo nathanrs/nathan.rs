@@ -19,6 +19,11 @@ Below is a list of the books I've read since I was 13. The ones in *italics* sto
 
 ## 2026 - Age 23
 {{< book
+    title="Law 101"
+    author="Jay M. Feinman"
+    special="true">}}
+
+{{< book
     title="Breakneck"
     author="Dan Wang">}}
 
