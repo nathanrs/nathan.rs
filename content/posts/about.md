@@ -13,7 +13,7 @@ For information about me, below are a few things I've been doing.
 
 Currently |
 --- | ---
-Aug 2026 - Present | **CTO and Co-Founder** at Tarski Research (YC F26), working on something new!
+Aug 2026 - Present | **CEO and Co-Founder** at Tacit Research (YC F26), working on something new!
 
 Previously |
 --- | ---
