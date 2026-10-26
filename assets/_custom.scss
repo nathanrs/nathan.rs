@@ -165,9 +165,13 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
         width: 100%;
         max-width: 20rem;
         margin-inline: auto;
-        padding: $padding-8 $padding-16;
+        // Palatino's metrics leave more room above the glyphs than below,
+        // so text sits visually high in the box. Shift a little padding
+        // from the bottom to the top to optically centre it.
+        padding: calc(#{$padding-8} + 0.125rem) $padding-16 calc(#{$padding-8} - 0.125rem);
         font-family: inherit;
         font-size: var(--font-size-smaller);
+        line-height: 1.4;
         color: var(--body-font-color);
         background: var(--body-background);
         border: $padding-1 solid var(--gray-200);
