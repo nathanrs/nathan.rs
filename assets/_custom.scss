@@ -377,6 +377,12 @@ html:not(.light-mode) .markdown img[src$=".gif"] {
         p {
             margin: 0;
         }
+
+        // inline code uses a fixed site-wide size; scale it to the note text
+        code {
+            font-size: 0.85em;
+            padding: 0.05em 0.2em;
+        }
     }
 
     .post-sidenote-number {
