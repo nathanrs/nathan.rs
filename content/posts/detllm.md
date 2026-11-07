@@ -3,6 +3,7 @@ title: "Eliminating Nondeterminism in LLM Inference with Integer-Only Arithmetic
 date: 2026-10-31T10:00:00-07:00
 tags: ["Machine Learning"]
 featured: true
+draft: true
 hero: "/js/detllm.js"
 ---
 
