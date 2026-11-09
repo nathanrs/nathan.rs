@@ -5,7 +5,7 @@ tags: ["Machine Learning"]
 featured: true
 draft: false
 hero: "/js/weight-space-lp.js"
-heroHeight: 291
+heroHeight: 256
 ---
 
 Last week, MIT CSAIL published [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/). Given the raw weights of a small network, GPT-6 Astra could tell which game it had been trained to play. Given only a game's rules, it could write the weights of a small network from scratch and beat networks trained with PPO for 100 million steps. No gradients, no training loop, just reasoning about what the weights compute. They coined this **weight-space programming**.
@@ -121,7 +121,7 @@ To get exactly 8 columns per layer, I kept the 8 with the largest effect and sol
 That replaces Astra's 8-hour search, including its choice of columns and $\alpha$, with a couple of LP solves. An off-the-shelf solver (HiGHS) took over 20 minutes each on these constraints, so I wrote a GPU solver (PDHG, the algorithm behind PDLP) that gets within 0.2% of its optimum in about a minute.[^pdhg]
 
 <!-- anim: reuse the timeline; the 8-hour "find v" phase collapses into a single tick labeled with the LP solves. -->
-<figure class="post-anim"><canvas data-anim="timeline-lp" style="height: 170px" role="img" aria-label="The same timeline, with the eight-hour dose search replaced by a couple of LP solves."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="timeline-lp" style="height: 170px" role="img" aria-label="The same timeline, with the eight-hour search for v replaced by a couple of LP solves."></canvas></figure>
 
 
 
@@ -167,7 +167,7 @@ For comparison, on the same runs: the LP edit scores 62.5 on the dev set and 53.
 
 At 1×, the steering vector recovers essentially the whole fix. The window is narrow: at 0.5× the loops come back, and at 2× they stop but the reasoning falls apart.
 
-<!-- anim: dose slider over a reasoning trace. 0.5x: trace loops. 1x: trace finishes with \boxed{}. 2x: trace ends quickly with nonsense. -->
+<!-- anim: steering-strength slider over a reasoning trace. 0.5x: trace loops. 1x: trace finishes with \boxed{}. 2x: trace ends quickly with nonsense. -->
 <figure class="post-anim"><canvas data-anim="dose" style="height: 282px" role="img" aria-label="The same problem at three steering strengths: too weak and the model loops, the right dose and it finishes, too strong and its reasoning breaks."></canvas></figure>
 
 The only difference is delivery. The LP edit is an ordinary checkpoint; the steering vector needs extra code at inference time.
@@ -211,9 +211,9 @@ Or use the BibTex citation:
 
 
 [^paper]: Rikiya Takehi, Jayden Teoh, Alex Zhang and Omar Khattab, [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/), MIT CSAIL, 2026. The [logs](https://github.com/RikiyaT/lm_understand-logs) are released under CC BY 4.0, and everything about Astra's run in this post comes from them.
-[^timeline]: The whole run took 158 turns and 20.3 hours, including a 4.7-hour outage. 19 requests failed and weren't charged against the budget, 15 of them during the dose search. The phase breakdown is in the [write-up](https://github.com/nathanrs/weight-space-lp/blob/main/docs/WRITEUP.md).
-[^loops]: A token is a duplicate if the 16-token window ending at it already appeared earlier in the response. A loop starts at the first point after which at least 80% of the remaining tokens are duplicates. Looping tokens are duplicates 64+ tokens after that; productive tokens are 256+ tokens before it, or anywhere in a trace that finished.
-[^effect]: "Largest effect" ranks columns by $|v_j| \cdot \text{std}(h_j)$, how much each one typically adds along $u$.
-[^pdhg]: PDHG only needs matrix-vector products, so all the tokens fit on the GPU at once, and its L1 step returns exactly sparse $v$.
-[^probe]: A linear probe on layer 15 activations spots a loop once it's under way with AUC 0.93, but only 0.73 at the point where it starts.
+[^timeline]: Astra's full run took 158 turns and 20.3 hours, 4.7 of them an outage. 19 forward passes failed and weren't counted against its budget. The full breakdown is in the [write-up](https://github.com/nathanrs/weight-space-lp/blob/main/docs/WRITEUP.md).
+[^loops]: A token counts as repeated if the 16 tokens ending at it already appeared earlier in the answer. A loop starts at the first point after which at least 80% of the remaining tokens are repeats. Looping tokens are repeats at least 64 tokens into a loop. Productive tokens come at least 256 tokens before it, or anywhere in an answer that finished.
+[^effect]: Each column is ranked by $|v_j|$ times the standard deviation of $h_j$, roughly how much it adds along $u$ at a typical token.
+[^pdhg]: PDHG (primal-dual hybrid gradient) only needs matrix-vector products, so all the token constraints fit on the GPU at once, and it returns an exactly sparse $v$.
+[^probe]: A linear probe on layer 15's activations can tell looping tokens from productive ones once a loop is under way (AUC 0.93), but much less well at the point where it starts (0.73).
 [^her]: Or whether you can make it [sound like her](https://x.com/jasonzhang10/status/2115447069574054323).

@@ -229,28 +229,16 @@ function heroRun(canvas, D) {
   ];
   const CYCLE = 17;
   const LH = 14,
-    ROWS = 13,
     HEAD = 24,
     FOOT = 40,
     GAP = 18,
     stackAt = 640;
-  const panelH = HEAD + ROWS * LH + 8 + FOOT;
+  // stacked on phones, so each panel shows fewer lines to keep the hero within one screen
+  const rowsFor = (W) => (W < stackAt ? 8 : 13);
+  const panelHFor = (W) => HEAD + rowsFor(W) * LH + 8 + FOOT;
+  let ROWS = 13,
+    panelH = panelHFor(1000);
   let cache = { w: 0 };
-  // the problem statement above the panels, wrapped to the canvas width
-  function qLines(W, ctx) {
-    ctx.font = SANS;
-    const lines = [];
-    let line = "";
-    for (const w of `Problem: ${h.problem}`.split(" ")) {
-      const cand = line ? line + " " + w : w;
-      if (line && ctx.measureText(cand).width > W - 4) {
-        lines.push(line);
-        line = w;
-      } else line = cand;
-    }
-    return line ? [...lines, line] : lines;
-  }
-  const topFor = (W, ctx) => qLines(W, ctx).length * 15 + 16;
 
   function wrapped(segs, pw, ctx) {
     ctx.font = MONO_S;
@@ -263,17 +251,18 @@ function heroRun(canvas, D) {
 
   run(
     canvas,
-    (W, ctx) => topFor(W, ctx) + (W < stackAt ? panelH * 2 + GAP : panelH) + 6,
+    (W) => (W < stackAt ? panelHFor(W) * 2 + GAP : panelHFor(W)) + 2,
     (ctx, W, H, now) => {
       const C = colors();
       const narrow = W < stackAt;
+      ROWS = rowsFor(W);
+      panelH = panelHFor(W);
       const pw = narrow ? W - 2 : (W - GAP) / 2;
       if (cache.w !== pw) cache = { w: pw, base: wrapped(BASE, pw, ctx), lp: wrapped(LP, pw, ctx) };
       const t = REDUCE ? CYCLE - 1 : (now / 1000) % CYCLE;
 
       // the problem
-      qLines(W, ctx).forEach((l, i) => label(ctx, l, 1, 9 + i * 15, C.mute, SANS));
-      const TOPQ = topFor(W, ctx);
+      const TOPQ = 1;
 
       panel(1, TOPQ, "base model", BASE, cache.base, true);
       panel(narrow ? 1 : pw + GAP, narrow ? TOPQ + panelH + GAP : TOPQ, "with the LP edit", LP, cache.lp, false);
@@ -732,7 +721,7 @@ const END_H = 20.35;
 const PHASES = [
   { a: 0, b: 0.26, name: "find u", sub: "15 min · 3 passes", c: HOT },
   { a: 0.26, b: 2.33, name: "pick layers", sub: "2 passes", c: MID },
-  { a: 2.33, b: 10.03, name: "find v (dose)", sub: "~8 h · 28 passes", c: COOL },
+  { a: 2.33, b: 10.03, name: "find v", sub: "~8 h · 28 passes", c: COOL },
   { a: 10.03, b: END_H, name: "confirm", sub: "17 passes, no changes", c: [170, 165, 158] },
 ];
 function timelineAnim(canvas, lp) {
