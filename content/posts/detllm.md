@@ -5,6 +5,7 @@ tags: ["Machine Learning"]
 featured: true
 draft: true
 hero: "/js/detllm.js"
+heroHeight: 290
 ---
 
 A while back, Thinking Machines published [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), which showed that even greedy decoding isn't deterministic. In theory, at temperature 0 a model always picks its single most likely next token, so the same prompt gives the same answer every time. In practice, when they sent one prompt 1,000 times, they got 80 different answers.[^tm]
@@ -37,7 +38,7 @@ A floating-point number stores a fixed number of significant digits and a separa
 An LLM's forward pass is mostly sums: every matmul, softmax, and layer norm adds up long lists of numbers, rounding at each step. The order of those additions is up to the kernel. Below, the same eight fp32 values are summed two ways: left to right, and as two halves combined (what a "split-K" matmul kernel does).[^contrived]
 
 <!-- anim: two devices, two reduction orders, fp32 -->
-<figure class="post-anim"><canvas data-anim="float-order" role="img" aria-label="The same eight fp32 numbers summed in two orders: left to right, and as two partial sums combined. Each addition rounds, and the two orders produce different final results."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="float-order" style="height: 420px" role="img" aria-label="The same eight fp32 numbers summed in two orders: left to right, and as two partial sums combined. Each addition rounds, and the two orders produce different final results."></canvas></figure>
 
 ### Why kernels don't always add in the same order
 
@@ -46,7 +47,7 @@ The natural guess is that GPU threads finish in a random order, so the sum lands
 What they aren't is **batch invariant**. cuBLAS doesn't have one matmul kernel; it has a catalog, and it picks one based on the problem's shape. A small batch can't keep every streaming multiprocessor busy, so the library splits the reduction into chunks and sums them separately. A big batch has enough rows to go around, so each row is reduced in one pass. Your row is the same either way. The order it gets added in is not.
 
 <!-- anim: batch size changes the kernel, which changes your row's reduction order -->
-<figure class="post-anim"><canvas data-anim="batch-variance" role="img" aria-label="A request is one row of a batched matmul. As the batch size changes, the library picks a different kernel, which splits the reduction over K differently, and the request's own output changes even though its inputs did not."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="batch-variance" style="height: 360px" role="img" aria-label="A request is one row of a batched matmul. As the batch size changes, the library picks a different kernel, which splits the reduction over K differently, and the request's own output changes even though its inputs did not."></canvas></figure>
 
 On a serving endpoint, batch size depends on how many other people are sending requests at that moment. So your output depends on traffic you can't see or control. Batch size isn't the only cause, either. Prefill processes your whole prompt in one big matmul while decode handles one token at a time, so the same tokens go through different kernels. And if the KV cache is split into chunks differently, attention gets summed in a different order.[^tm-axes]
 
@@ -61,14 +62,14 @@ Across devices, there's nothing to pin. An A100 and an H100 have different tenso
 Integer addition is associative. It is also commutative. $(a + b) + c = a + (b + c)$ holds for every $a$, $b$, $c$ as long as you do not overflow, and overflow is something you can bound ahead of time. That means every reduction, in any order, on any correct hardware, yields the same bits. Here are the same eight values as before, scaled by 4 so they are integers, going through the same two devices.
 
 <!-- anim: the same two orders on integers -->
-<figure class="post-anim"><canvas data-anim="int-order" role="img" aria-label="The same two reduction orders applied to integers. Every partial sum is exact, and both orders produce the same result."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="int-order" style="height: 420px" role="img" aria-label="The same two reduction orders applied to integers. Every partial sum is exact, and both orders produce the same result."></canvas></figure>
 
 With integers, determinism comes from the arithmetic itself. You don't need special kernels or a pinned order, and two vendors only have to agree that integer multiply-add is exact.
 
 But int8 inference already exists (SmoothQuant, LLM.int8, OmniQuant), and it isn't deterministic across hardware. That's because it's **simulated quantization**: matmuls run in int8, but everything between them (softmax, RMSNorm, SwiGLU, rotary embeddings) drops back to float. Every one of those float steps is a place for reduction order to leak back in.
 
 <!-- anim: integer storage is not integer arithmetic -->
-<figure class="post-anim"><canvas data-anim="pipeline" role="img" aria-label="Two pipelines. A typical int8 stack keeps the matmuls in integers but dequantizes to floating point for every nonlinear operation, so rounding re-enters at each. DetLLM runs every operation in integers."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="pipeline" style="height: 248px" role="img" aria-label="Two pipelines. A typical int8 stack keeps the matmuls in integers but dequantizes to floating point for every nonlinear operation, so rounding re-enters at each. DetLLM runs every operation in integers."></canvas></figure>
 
 Integer *storage* is not integer *arithmetic*. One float step anywhere breaks it, so the entire forward pass has to be integers, from input ids to logits.
 
@@ -110,7 +111,7 @@ Nine integer runs, one hash. Nine fp16 runs, nine hashes, every pair disagreeing
 There's a twist in the fp16 column. The demo also hashes the generated *token ids*, and eight of the nine fp16 runs produce the same 512 tokens despite disagreeing on the logits at every step. Greedy decoding is an argmax, and an argmax ignores any perturbation smaller than the gap between the top two candidates. On this prompt, batch composition shifts the step-0 logits by at most 0.094, while the top-two gap is 2.66, a 28× cushion.
 
 <!-- anim: argmax cushion vs near tie -->
-<figure class="post-anim"><canvas data-anim="margin" role="img" aria-label="Logits for the top four candidate tokens under small device-dependent perturbations. With a large gap between the top two, the argmax never changes. At a near tie, the same perturbation flips which token wins."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="margin" style="height: 188px" role="img" aria-label="Logits for the top four candidate tokens under small device-dependent perturbations. With a large gap between the top two, the argmax never changes. At a near tie, the same perturbation flips which token wins."></canvas></figure>
 
 That cushion is unusually generous. Most steps are much closer: 45 of the 512 have a top-two gap under 0.5. At step 457, *" introduces"* leads *" is"* by just 0.03 on the A100. On the M1 Pro the two land in an exact tie, the argmax picks the lower token id, *" is"*, and the text forks:
 

@@ -13,6 +13,8 @@
   {{- else with (resources.Get $path) -}}
     {{- $destination = .RelPermalink -}}
   {{- else -}}
+  {{- /* files in static/ are served as-is at the same path */ -}}
+  {{- if not (os.FileExists (path.Join "static" $path)) -}}
     {{- $mode := .Page.Site.Params.BookPortableLinks -}}
     {{- $message := printf "Image reference '%s' not found in '%s'" .Destination .Page.RelPermalink -}}
     {{- if eq $mode "warning" -}}
@@ -20,6 +22,7 @@
     {{- else if eq $mode "error" -}}
     {{- errorf $message -}}
     {{- end -}}
+  {{- end -}}
   {{- end -}}
 
   {{- with $url.RawQuery -}}

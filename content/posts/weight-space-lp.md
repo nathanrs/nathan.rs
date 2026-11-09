@@ -5,6 +5,7 @@ tags: ["Machine Learning"]
 featured: true
 draft: false
 hero: "/js/weight-space-lp.js"
+heroHeight: 291
 ---
 
 Last week, MIT CSAIL published [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/). Given the raw weights of a small network, GPT-6 Astra could tell which game it had been trained to play. Given only a game's rules, it could write the weights of a small network from scratch and beat networks trained with PPO for 100 million steps. No gradients, no training loop, just reasoning about what the weights compute. They coined this **weight-space programming**.
@@ -20,7 +21,7 @@ Looking at Astra's edit, I realized most of its search was solving a linear prog
 Small reasoning models have a common failure: they get stuck in **thinking loops**, repeating the same few lines over and over instead of finishing their reasoning. Qwen3.5-0.8B is especially prone to it, and its model card says so. On MATH-500, 93% of the base model's answers ran into the 32,768-token limit without ever reaching an answer.
 
 <!-- anim: duplicate-text profile along 8 real base-model answers -->
-<figure class="post-anim"><canvas data-anim="loop-trace" role="img" aria-label="Eight of the base model's answers drawn as bars along the 32,768-token budget. Most turn almost entirely to repeated text within the first thousand tokens and run to the limit; one finishes early."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="loop-trace" style="height: 240px" role="img" aria-label="Eight of the base model's answers drawn as bars along the 32,768-token budget. Most turn almost entirely to repeated text within the first thousand tokens and run to the limit; one finishes early."></canvas></figure>
 
 The edit fixes the loops, so it helps anywhere the model loops. That includes instruction following: IFEval went from 21% to 62%.
 
@@ -42,7 +43,7 @@ Transformers use residual connections: each layer's output is added to its input
 Astra wrote four pairs of short texts, each a piece of productive reasoning and a looping version of the same reasoning. It ran all eight through the model and recorded each token's residual stream vector at one layer. Averaging over the looping texts gives one vector, and averaging over the productive texts gives another. Their difference, normalized, is the **loop direction** $u$: the way the residual stream moves when the model loops.
 
 <!-- anim: 2D projection of the residual stream. Productive tokens scatter in one region; as a trace starts looping, its tokens drift along an arrow labeled u. -->
-<figure class="post-anim"><canvas data-anim="loop-direction" role="img" aria-label="Residual stream vectors of productive tokens sit in one region. As the model starts looping, its residual stream drifts along a single direction, u."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="loop-direction" style="height: 320px" role="img" aria-label="Residual stream vectors of productive tokens sit in one region. As the model starts looping, its residual stream drifts along a single direction, u."></canvas></figure>
 
 ### Editing the weights
 
@@ -53,7 +54,7 @@ $$x \leftarrow x + Wh, \qquad Wh = \sum_j h_j \, w_j$$
 So the MLP's output is always a weighted sum of the same 3,584 vectors, the columns $w_j$ of $W$. $W$ fixes what those vectors are; the activations $h_j$ decide how much of each one gets added at each token.
 
 <!-- anim: entries of h light up with different strengths; each scales its column of W into a 1024-d vector, and the sum builds up. -->
-<figure class="post-anim"><canvas data-anim="down-proj" role="img" aria-label="Each entry of the hidden activation scales its own column of W, and the scaled columns add up to the update written into the residual stream."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="down-proj" style="height: 418px" role="img" aria-label="Each entry of the hidden activation scales its own column of W, and the scaled columns add up to the update written into the residual stream."></canvas></figure>
 
 Each column points partly along $u$. That amount, $u^\top w_j$, is how much column $j$ pushes the model toward looping whenever $h_j$ is active. Astra's edit subtracts a multiple $\alpha$ of it:
 
@@ -62,7 +63,7 @@ $$w_j \to w_j - \alpha \, (u^\top w_j) \, u$$
 At $\alpha = 1$ the component along $u$ is gone, so the column no longer pushes toward looping. Doing this to every column in layers 15 and 19 took accuracy from 9% to 33% on GSM8K and MATH training problems. At $\alpha = 6$ the component is flipped: a column that wrote $+a$ along $u$ now writes $-5a$, and pushes the model *away* from looping whenever it's used.
 
 <!-- anim: one column w_j drawn as an arrow with its component along u highlighted. Slider for alpha: at 1 the component vanishes, at 6 it points the other way at 5x length. -->
-<figure class="post-anim"><canvas data-anim="flip" role="img" aria-label="One column of W and its component along u. At alpha 1 the component is removed; at alpha 6 it is reversed and five times as long."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="flip" style="height: 250px" role="img" aria-label="One column of W and its component along u. At alpha 1 the component is removed; at alpha 6 it is reversed and five times as long."></canvas></figure>
 
 Every edited column changes by a multiple of the same vector $u$. So the whole edit is one direction $u$ plus one number per column, $v_j = -\alpha\,(u^\top w_j)$, which is zero for columns left alone. That's a **rank-1** change:
 
@@ -88,7 +89,7 @@ Pushing harder than $\alpha = 1$ helped more, and a random direction did nothing
 The paper released Astra's full logs: every tool call, every forward pass, every note it wrote to itself. Astra had a Python kernel with the weights loaded and a budget of 50 forward passes, each a batched run of the model on training problems or texts of its choosing.
 
 <!-- anim: Astra's run as a horizontal timeline, four colored phases: find u (0:00-0:15), pick layers (to 2:20), find v (to 10:00), confirm (to 20:17, incl. outage). Pass ticks along the bar. -->
-<figure class="post-anim"><canvas data-anim="timeline" role="img" aria-label="Astra's 20-hour run split into phases: 15 minutes to find the loop direction, about two hours to choose layers, about eight hours to tune the edit, and the rest confirming it."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="timeline" style="height: 128px" role="img" aria-label="Astra's 20-hour run split into phases: 15 minutes to find the loop direction, about two hours to choose layers, about eight hours to tune the edit, and the rest confirming it."></canvas></figure>
 
 The edit was frozen after about 10 hours, and the last 17 passes re-tested it without changing anything.[^timeline] Of those 10 hours, finding $u$ took 15 minutes. Finding $v$ took about 8 hours.
 
@@ -103,8 +104,8 @@ I labeled tokens from the base model's own traces: **looping** tokens ($R$), dee
 $$
 \begin{aligned}
 \min_v \quad & \sum_j |v_j| \\
-\text{s.t.} \quad & v \cdot h_t \le -\delta && t \in R \quad \text{(push looping tokens away from } u \text{ by at least } \delta\text{)} \\
-& |v \cdot h_t| \le \varepsilon && t \in P \quad \text{(move productive tokens by at most } \varepsilon\text{)}
+\text{s.t.} \quad & v \cdot h_t \le -\delta && t \in R \quad \text{(at least } \delta \text{ away from } u\text{)} \\
+& |v \cdot h_t| \le \varepsilon && t \in P \quad \text{(at most } \varepsilon\text{)}
 \end{aligned}
 $$
 
@@ -113,14 +114,14 @@ In practice no $v$ satisfies every constraint, so each one gets a penalized slac
 Minimizing L1 tends to make $v$ sparse. The L1 ball is a diamond, and when you grow it until it touches the feasible region, it usually touches at a corner, where most coordinates are exactly zero. So the LP picks the columns as well as the amounts.
 
 <!-- anim: 2D v-space. Constraint half-planes from a few tokens shade the infeasible region. An L1 diamond grows from the origin until it touches the feasible region at a corner on an axis. -->
-<figure class="post-anim"><canvas data-anim="l1-corner" role="img" aria-label="Constraints from looping and productive tokens cut out a feasible region. An L1 diamond grows from the origin and first touches that region at a corner, where one coordinate is zero."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="l1-corner" style="height: 340px" role="img" aria-label="Constraints from looping and productive tokens cut out a feasible region. An L1 diamond grows from the origin and first touches that region at a corner, where one coordinate is zero."></canvas></figure>
 
 To get exactly 8 columns per layer, I kept the 8 with the largest effect and solved again with the rest fixed at zero.[^effect]
 
 That replaces Astra's 8-hour search, including its choice of columns and $\alpha$, with a couple of LP solves. An off-the-shelf solver (HiGHS) took over 20 minutes each on these constraints, so I wrote a GPU solver (PDHG, the algorithm behind PDLP) that gets within 0.2% of its optimum in about a minute.[^pdhg]
 
 <!-- anim: reuse the timeline; the 8-hour "find v" phase collapses into a single tick labeled with the LP solves. -->
-<figure class="post-anim"><canvas data-anim="timeline-lp" role="img" aria-label="The same timeline, with the eight-hour dose search replaced by a couple of LP solves."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="timeline-lp" style="height: 170px" role="img" aria-label="The same timeline, with the eight-hour dose search replaced by a couple of LP solves."></canvas></figure>
 
 
 
@@ -129,7 +130,7 @@ That replaces Astra's 8-hour search, including its choice of columns and $\alpha
 I tested two LP edits. Both use Astra's layers. One uses Astra's direction $u$. The other uses a **heuristic direction**: label tokens in the model's own traces as looping or productive with a simple repetition detector, then take the difference of their average residual streams. It's the same recipe Astra used, minus the hand-written texts, so no LLM is involved. I tuned the LP's settings on a separate 128-problem dev set; everything in the chart and table is on data never used for fitting or tuning.
 
 <!-- anim: benchmark bars -->
-<figure class="post-anim"><canvas data-anim="benchmarks" role="img" aria-label="Accuracy of the base model, Astra's edit, and the two LP edits on GSM8K test, MATH-500, unseen training problems and IFEval. Both LP edits land within a few points of Astra's edit."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="benchmarks" style="height: 290px" role="img" aria-label="Accuracy of the base model, Astra's edit, and the two LP edits on GSM8K test, MATH-500, unseen training problems and IFEval. Both LP edits land within a few points of Astra's edit."></canvas></figure>
 
 | | Changed weights | GSM8K test | MATH-500 | IFEval |
 |---|---|---|---|---|
@@ -167,7 +168,7 @@ For comparison, on the same runs: the LP edit scores 62.5 on the dev set and 53.
 At 1×, the steering vector recovers essentially the whole fix. The window is narrow: at 0.5× the loops come back, and at 2× they stop but the reasoning falls apart.
 
 <!-- anim: dose slider over a reasoning trace. 0.5x: trace loops. 1x: trace finishes with \boxed{}. 2x: trace ends quickly with nonsense. -->
-<figure class="post-anim"><canvas data-anim="dose" role="img" aria-label="The same problem at three steering strengths: too weak and the model loops, the right dose and it finishes, too strong and its reasoning breaks."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="dose" style="height: 282px" role="img" aria-label="The same problem at three steering strengths: too weak and the model loops, the right dose and it finishes, too strong and its reasoning breaks."></canvas></figure>
 
 The only difference is delivery. The LP edit is an ordinary checkpoint; the steering vector needs extra code at inference time.
 

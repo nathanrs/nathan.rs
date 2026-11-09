@@ -3,6 +3,7 @@ title: "Diffusion LLMs are Faster at Writing Code"
 date: 2025-12-13T08:13:54-06:00
 tags:
   - "Machine Learning"
+script: "/js/grape.js"
 ---
 
 In this post, I run small experiments showing that diffusion language models generate code (and other structured text) at a faster rate. Increased stucture tends to correlate with reduced entropy, which leads to higher confident token predictions, which directly means more tokens decoded in parallel per step.[^1]
@@ -28,7 +29,7 @@ In the following example:
 
 a diffusion language model could generate the prediction "grape" for the entire context length in one step, while in speculative decoding, even if the entire sequence is easily predictable, it can only predict K tokens at a time (typically around 4-8, from what I've read).
 
-<img alt="language diffusion vs speculative sampling on grape example" style="max-width: 100%" src="/images/grape-diffusion.gif">
+<figure class="post-anim"><canvas data-anim="grape" style="height: 474px" role="img" aria-label="Generating 120 grape tokens. A diffusion model fills all of them in one step; speculative decoding with k = 5 takes 24 steps."></canvas></figure>
 
 
 

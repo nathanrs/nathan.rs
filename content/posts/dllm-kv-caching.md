@@ -4,6 +4,7 @@ date: 2026-06-26T18:31:55-07:00
 tags: ["Machine Learning"]
 featured: true
 hero: "/js/diffusion-noise.js"
+heroHeight: 146
 ---
 
 The typical language model is **autoregressive** (AR): it predicts one token at a time, left to right, each token conditioned on the ones before it. This bakes in two limitations: it spends one forward pass per token, so latency grows linearly with length regardless of how hard each token is to predict, and it cannot revise earlier tokens if later context makes them appear wrong.
@@ -18,12 +19,12 @@ AR generation is cheap because of **KV caching**. The causal attention mask mean
 Without caching, generating $n$ tokens costs on the order of $n^2$ work; with it, it's roughly linear.
 
 <!-- anim: AR generation with KV caching -->
-<figure class="post-anim"><canvas data-anim="ar-cache" role="img" aria-label="Autoregressive generation: each token is computed once, then cached and reused. The active token reads all cached tokens to its left."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="ar-cache" style="height: 126px" role="img" aria-label="Autoregressive generation: each token is computed once, then cached and reused. The active token reads all cached tokens to its left."></canvas></figure>
 
 Diffusion language models use **bidirectional** attention with no causal mask, so every token attends to every other token.[^bert] That means if a token changes anywhere in the sequence, it shifts the keys and values of all the others. And since generation works by changing tokens every step, every position's keys and values can drift at every step. Thus, diffusion models can't use normal KV caching.
 
 <!-- anim: diffusion generation, every position drifts every step -->
-<figure class="post-anim"><canvas data-anim="diffusion-drift" role="img" aria-label="Diffusion generation: the whole sequence is present at once, and as each step changes tokens, drift accumulates across every position."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="diffusion-drift" style="height: 79px" role="img" aria-label="Diffusion generation: the whole sequence is present at once, and as each step changes tokens, drift accumulates across every position."></canvas></figure>
 
 The good news is that generation quality is robust to slight key and value drift. KV cache approximation (using stale KV states and refreshing them periodically) allows dLLMs to reuse cached KV states without sacrificing quality. Once you allow approximate caching, the question stops being "is caching possible" and becomes a tradeoff: how much can you reuse, and how stale can it get, before quality starts to slip?
 
@@ -43,12 +44,12 @@ There are many ways to "destroy information." For text, the two noise processes 
 **Masked diffusion** replaces tokens with a special `[MASK]` token. Generation looks like filling in blanks. This is BERT-style masking turned into a generative process, and it's what powers most of the diffusion models you've heard of, like [LLaDA](https://arxiv.org/abs/2502.09992), Dream, Inception's Mercury, and [Gemini Diffusion](https://deepmind.google/models/gemini-diffusion/).
 
 <!-- anim: masked generation -->
-<figure class="post-anim"><canvas data-anim="masked" role="img" aria-label="Masked diffusion: every position starts as [MASK], then flips to a real word and is fixed. You can always tell which positions are unresolved."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="masked" style="height: 70px" role="img" aria-label="Masked diffusion: every position starts as [MASK], then flips to a real word and is fixed. You can always tell which positions are unresolved."></canvas></figure>
 
 **Uniform diffusion** replaces tokens with a *random vocabulary token* instead. Generation looks like going from nonsense to coherent text.
 
 <!-- anim: uniform generation -->
-<figure class="post-anim"><canvas data-anim="uniform" role="img" aria-label="Uniform diffusion: every position always shows a real, ordinary-looking word, so corrupted and correct positions are indistinguishable and any position can change at any step."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="uniform" style="height: 70px" role="img" aria-label="Uniform diffusion: every position always shows a real, ordinary-looking word, so corrupted and correct positions are indistinguishable and any position can change at any step."></canvas></figure>
 
 These two ways of adding noise lead to very different behavior and properties during generation.
 
@@ -67,12 +68,12 @@ The space of decoding strategies is much larger for diffusion than for AR. AR ha
 In both noise processes, that decision is usually confidence-based:[^conf] each step updates the positions the model is most sure about. And the positions it's most sure about tend to sit right next to context that's already resolved. Since the prompt anchors the left, confidence-based decoding ends up filling in roughly left to right on its own, without anyone enforcing an order.
 
 <!-- anim: confidence fills in left to right -->
-<figure class="post-anim"><canvas data-anim="confidence-ltr" role="img" aria-label="A fluctuating confidence level across positions, running higher near the resolved context on the left and lower on the right, so confidence-based decoding tends to progress left to right without being forced to."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="confidence-ltr" style="height: 67px" role="img" aria-label="A fluctuating confidence level across positions, running higher near the resolved context on the left and lower on the right, so confidence-based decoding tends to progress left to right without being forced to."></canvas></figure>
 
 **Block-wise** generation just draws a clean boundary around this: treat one contiguous block as the region you're actively working on, and treat everything outside it as not currently changing. That's the setup [Fast-dLLM](https://arxiv.org/abs/2505.22618) uses for masked diffusion: cache the prompt and the decoded tokens, and recompute only the active block. It reaches speedups of up to around 27×.[^fastdllm-27x]
 
 <!-- anim: block-wise decoding / local drift map -->
-<figure class="post-anim"><canvas data-anim="blockwise" role="img" aria-label="Block-wise decoding: an active block sweeps left to right. Inside the block positions drift heavily and are recomputed each step; the prompt, completed blocks, and future blocks stay cool and cached."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="blockwise" style="height: 72px" role="img" aria-label="Block-wise decoding: an active block sweeps left to right. Inside the block positions drift heavily and are recomputed each step; the prompt, completed blocks, and future blocks stay cool and cached."></canvas></figure>
 
 This left-to-right preference is noise process agnostic: any confidence-based decoding algorithm tends to produce it, no matter how tokens are corrupted.
 
@@ -81,7 +82,7 @@ This left-to-right preference is noise process agnostic: any confidence-based de
 When a token changes, the disturbance to the cache is concentrated on that token and its immediate neighbors, and it falls off quickly with distance in both directions.[^drift] Under block-wise generation, where the changing tokens are penned into one block, almost all the drift piles up inside the current block.
 
 <!-- anim: local KV drift around a changing token -->
-<figure class="post-anim"><canvas data-anim="drift-local" role="img" aria-label="When one token changes, KV drift spikes at that position and falls off sharply with distance in both directions; positions a few steps away barely move."></canvas></figure>
+<figure class="post-anim"><canvas data-anim="drift-local" style="height: 78px" role="img" aria-label="When one token changes, KV drift spikes at that position and falls off sharply with distance in both directions; positions a few steps away barely move."></canvas></figure>
 
 These two properties are what dLLM caching strategies depend on, and neither depends on the noise process. So the masked diffusion caching strategies port over almost directly: cache the stable regions, recompute the changing one, and refresh all positions occasionally. My uniform-cache engine is essentially that, and it runs more than an order of magnitude faster than the uncached baseline with no meaningful quality loss (tested on 3B and 10B parameter models).
 

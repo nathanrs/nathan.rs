@@ -23,6 +23,8 @@
         <aside class="post-sidenotes" aria-label="Footnotes"></aside>
     </div>
 </article>
+{{/* Optional module for inline animations on posts without a script hero. */}}
+{{ with .Params.script }}<script type="module" src="{{ . | relURL }}"></script>{{ end }}
 {{ end }}
 
 {{ define "toc" }}{{ end }}
