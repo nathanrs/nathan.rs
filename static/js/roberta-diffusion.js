@@ -18,8 +18,14 @@
 import { colors, COOL, rgb, seg, ease, SANS_S, SANS_B, MONO, REDUCE, rrect, label, run, monoCols, wrapTokens, wrap, loadJSON, mount } from "./post-anim.js";
 
 const DATA = loadJSON("./roberta-diffusion.json", import.meta.url);
-const FONT = MONO;
-const LH = 17;
+// text size: smaller on phones so the full paragraph doesn't make the figures huge
+const NARROW = 640;
+let FONT = MONO,
+  LH = 17;
+function sizeFor(W) {
+  FONT = W < NARROW ? "9.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" : MONO;
+  LH = W < NARROW ? 13 : 17;
+}
 const FADE = 0.45; // seconds for a slot to change
 
 // Draw one slot in a given state: 0 = mask, 1 = final word, string = another word.
@@ -90,8 +96,12 @@ function hero(canvas) {
       HEAD = 30;
     run(
       canvas,
-      (W, ctx) => HEAD + linesFor(ctx, gen, W - 4) * LH + 10,
+      (W, ctx) => {
+        sizeFor(W);
+        return HEAD + linesFor(ctx, gen, W - 4) * LH + 10;
+      },
       (ctx, W, H, now) => {
+        sizeFor(W);
         const C = colors();
         const t = REDUCE ? CYCLE - 0.1 : (now / 1000) % CYCLE;
         const k = Math.min(n - 1, Math.floor(t / STEP));
@@ -124,15 +134,19 @@ function compare(canvas) {
       GAP = 20,
       stackAt = 640;
     const panelW = (W) => (W < stackAt ? W - 4 : (W - GAP) / 2 - 2);
-    const panelH = (W, ctx) => {
-      const w = panelW(W);
-      const gl = wrap(D.cmp_gpt, monoCols(ctx, FONT, w)).length;
-      return HEAD + Math.max(linesFor(ctx, gen, w), gl) * LH + 8;
-    };
+    const GPT_ROWS_NARROW = 8; // on phones the GPT-2 panel shows its newest lines only
+    const robertaH = (W, ctx) => HEAD + linesFor(ctx, gen, panelW(W)) * LH + 8;
+    const gptH = (W, ctx) =>
+      HEAD + (W < stackAt ? GPT_ROWS_NARROW : wrap(D.cmp_gpt, monoCols(ctx, FONT, panelW(W))).length) * LH + 8;
+    const panelH = (W, ctx) => Math.max(robertaH(W, ctx), W < stackAt ? 0 : gptH(W, ctx));
     run(
       canvas,
-      (W, ctx) => (W < stackAt ? panelH(W, ctx) * 2 + GAP : panelH(W, ctx)),
+      (W, ctx) => {
+        sizeFor(W);
+        return W < stackAt ? robertaH(W, ctx) + GAP + gptH(W, ctx) : panelH(W, ctx);
+      },
       (ctx, W, H, now) => {
+        sizeFor(W);
         const C = colors();
         const t = REDUCE ? CYCLE : (now / 1000) % CYCLE;
         const narrow = W < stackAt;
@@ -163,7 +177,9 @@ function compare(canvas) {
         header(gx, gy, "GPT-2 · left to right", Math.min(t, GT), GT);
         const gen2 = D.cmp_gpt.slice(D.prompt.length);
         const shown = D.prompt + gen2.slice(0, Math.round(gen2.length * Math.min(1, t / GT)));
-        wrap(shown, monoCols(ctx, FONT, pw)).forEach((line, r) => {
+        const glines = wrap(shown, monoCols(ctx, FONT, pw));
+        const gstart = narrow ? Math.max(0, glines.length - GPT_ROWS_NARROW) : 0;
+        glines.slice(gstart).forEach((line, r) => {
           label(ctx, line, gx, gy + HEAD + r * LH + LH / 2, C.fg, FONT);
         });
       },

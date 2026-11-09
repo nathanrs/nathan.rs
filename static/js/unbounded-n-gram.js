@@ -27,18 +27,21 @@ const SPEED = 5;
 function race(canvas) {
   DATA.then((D) => {
     const LH = 13,
-      ROWS = 30,
       HEAD = 44,
       GAP = 20,
       BAR = 56;
     const endA = D.right_time / SPEED;
     const CYCLE = endA + 3.5;
-    const panelH = HEAD + ROWS * LH + 8;
+    // fewer visible lines on phones; each panel still scrolls to its newest text
+    const rowsFor = (W) => (W < 560 ? 16 : 30);
+    const panelHFor = (W) => HEAD + rowsFor(W) * LH + 8;
     run(
       canvas,
-      () => panelH + BAR,
+      (W) => panelHFor(W) + BAR,
       (ctx, W, H, now) => {
         const C = colors();
+        const ROWS = rowsFor(W),
+          panelH = panelHFor(W);
         const a = REDUCE ? CYCLE : (now / 1000) % CYCLE;
         const real = a * SPEED;
         const pw = (W - GAP) / 2 - 1;
