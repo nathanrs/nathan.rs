@@ -4,7 +4,8 @@ date: 2026-01-17T18:47:03-06:00
 tags:
   - "Machine Learning"
 featured: true
-hero: "/images/unbounded-n-gram.gif"
+hero: "/js/unbounded-n-gram.js"
+heroHeight: 498
 ---
 
 Generating Shakespeare has become the ["Hello World"](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) of language models.[^1]
@@ -69,8 +70,8 @@ Below is a list of all the suffixes of this string (including their starting pos
 Suffixes:           Sorted:
 0: AABBCCBC         0 -> AABBCCBC   # Lexigraphically smallest
 1:  ABBCCBC         1 -> ABBCCBC
-2:   BBCCBC         6 -> BC
-3:    BCCBC         2 -> BBCCBC
+2:   BBCCBC         2 -> BBCCBC
+3:    BCCBC         6 -> BC
 4:     CCBC         3 -> BCCBC
 5:      CBC         7 -> C
 6:       BC         5 -> CBC
@@ -78,7 +79,10 @@ Suffixes:           Sorted:
 ```
 
 The suffix array is an array, not of suffixes, but of their **indices** in this sorted order. These indices act as pointers into the original dataset, in which we can retrieve the suffixes.
-We can see that the suffix array for this example is `[0, 1, 6, 2, 3, 7, 5, 4]`.
+We can see that the suffix array for this example is `[0, 1, 2, 6, 3, 7, 5, 4]`.
+
+<!-- anim: suffix -->
+<figure class="post-anim"><canvas data-anim="suffix" style="height: 208px" role="img" aria-label="The suffixes of AABBCCBC slide from text order into sorted order, and their starting indices are read off as the suffix array 0, 1, 2, 6, 3, 7, 5, 4."></canvas></figure>
 
 Below is a simple Python implementation for constructing this data structure:
 
@@ -93,7 +97,7 @@ def createSuffixArray(text: str) -> list[int]:
     
 text = "AABBCCBC"
 suffix_array = createSuffixArray(text)
-print(suffix_array)  # [0, 1, 6, 2, 3, 7, 5, 4]
+print(suffix_array)  # [0, 1, 2, 6, 3, 7, 5, 4]
 ```
 
 ### Efficient Query Search and Next Character Prediction
@@ -192,6 +196,9 @@ In my algorithm, we select $k$ n-grams to interpolate. To select which ones:
 2. **Back off** until the next $n$ has a new $m$ **which is greater than the previously seen** $m$ (and thus has a different probability distribution).
 3. **Repeat $k$ times** and **mix these $k$ probability distributions** (with exponential weight decay or something similar).
 
+<!-- anim: interp -->
+<figure class="post-anim"><canvas data-anim="interp" style="height: 390px" role="img" aria-label="The context ly trample on their so is shortened one character at a time. The full context appears once and predicts v. Backing off to n-their-so gives 2 matches, and to space-their-so gives 9. The three levels are weighted by 1, 0.1 and 0.01 and mixed: v 87.6 percent, u 10.1 percent, and l, n, c under 1 percent each."></canvas></figure>
+
 This gives us a distribution that's heavily weighted toward the longest context (biasing towards larger $n$) but allows for diversity from shorter contexts (to prevent verbatim copying).
 
 ```python
@@ -281,7 +288,7 @@ For `numMatches`, the first level's median is $m=1$ (what we expected) and the s
 
 Below is the same animation as above, comparing the generation quality and speed of both models. The first thing that sticks out is the difference in generation speed. We can see that my infini-gram implementation takes `0.08` seconds for generation ($k=2$, running on my M1 CPU), **250x** faster than the 10M parameter nanoGPT implementation (trained for 2500 steps on my M1 GPU).
 
-<img alt="Infini-gram vs GPT" style="max-width: 100%" src="/images/unbounded-n-gram.gif">
+<figure class="post-anim"><canvas data-anim="race" style="height: 498px" role="img" aria-label="Infini-gram and nanoGPT each generating 1,000 characters of Shakespeare. Infini-gram finishes in 0.08 seconds; nanoGPT takes 19.76 seconds."></canvas></figure>
     
 An important thing to note is that suffix arrays do not require GPUs at all and require minimal CPUs and RAM.[^4] The suffix array can stay entirely on disk when performing the binary search, only pulling in one page at each step in a sequential manner (thus, it doesn't benefit from more RAM or CPU cores).
 

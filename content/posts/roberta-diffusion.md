@@ -4,7 +4,8 @@ date: 2025-10-20
 tags:
   - "Machine Learning"
 featured: true
-hero: "/images/roberta-diffusion.gif"
+hero: "/js/roberta-diffusion.js"
+heroHeight: 244
 ---
 
 A while back, Google DeepMind unveiled [Gemini Diffusion](https://deepmind.google/models/gemini-diffusion/), an experimental language model that generates text using diffusion. Unlike traditional GPT-style models that generate one word at a time, Gemini Diffusion creates whole blocks of text by refining random noise step-by-step.
@@ -183,7 +184,7 @@ The output looks surprisingly coherent! Most of the quirks present are actually 
 
 Below is a comparison between our diffusion model and GPT-2:
 
-<img alt="RoBERTa Diffusion vs GPT" style="max-width: 100%" src="/images/roberta-diffusion-gpt.gif">
+<figure class="post-anim"><canvas data-anim="roberta-vs-gpt" style="height: 592px" role="img" aria-label="RoBERTa diffusion and GPT-2 continuing the same prompt in real time. RoBERTa fills in masked tokens over 10 steps in about 13 seconds; GPT-2 writes left to right and finishes in about 9 seconds."></canvas></figure>
 
 We see GPT-2's output is more coherent and slightly faster (~9 seconds vs ~13) but I'm pleasantly surprised with how good my simple implementation was.[^4] It is a good proof of concept, and with new approaches for architecture, noise type, and inference, the quality and speed can be drastically improved.
 

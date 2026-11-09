@@ -11,13 +11,19 @@
 {{ $videos := slice "mp4" "webm" "mov" }}
 {{ if eq $ext "js" }}
 <figure class="post-hero" aria-label="Post visual">
-  <canvas class="post-hero-canvas" data-hero-canvas role="img" aria-label="{{ $.Title }}"></canvas>
+  <canvas class="post-hero-canvas" data-hero-canvas{{ with $.Params.heroHeight }} style="height: {{ . }}px"{{ end }} role="img" aria-label="{{ $.Title }}"></canvas>
 </figure>
 <script type="module" src="{{ . | relURL }}"></script>
 {{ else if or (in $images $ext) (in $videos $ext) }}
 <figure class="post-hero" aria-label="Post visual">
   {{ if in $images $ext }}
-  <img class="post-hero-media" src="{{ . | relURL }}" alt="{{ $.Title }}" loading="lazy" />
+  {{ $file := path.Join "static" . }}
+  {{ if and (os.FileExists $file) (ne $ext "svg") }}
+  {{ $cfg := imageConfig $file }}
+  <img class="post-hero-media" src="{{ . | relURL }}" alt="{{ $.Title }}" width="{{ $cfg.Width }}" height="{{ $cfg.Height }}" />
+  {{ else }}
+  <img class="post-hero-media" src="{{ . | relURL }}" alt="{{ $.Title }}" />
+  {{ end }}
   {{ else }}
   <video class="post-hero-media" autoplay loop muted playsinline>
     <source src="{{ . | relURL }}" type="video/{{ if eq $ext "mov" }}mp4{{ else }}{{ $ext }}{{ end }}" />

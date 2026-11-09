@@ -100,7 +100,7 @@ function run(canvas, heightFor, render) {
   resize();
   requestAnimationFrame(function frame(now) {
     ctx.clearRect(0, 0, W, H);
-    render(ctx, W, H, t0 === null ? 0 : now - t0);
+    render(ctx, W, H, t0 === null ? 0 : Math.max(0, now - t0));
     requestAnimationFrame(frame);
   });
 }
@@ -420,7 +420,7 @@ function loopTraceAnim(canvas) {
         label(ctx, "tokens into the answer", (x0 + x1) / 2, yb + 28, C.mute, SANS_S, "center");
         label(
           ctx,
-          `8 of the base model's answers on dev-set problems · ${S.cut} of all ${S.n} hit the limit`,
+          W < 520 ? `${S.cut} of ${S.n} dev-set answers hit the limit` : `8 of the base model's answers on dev-set problems · ${S.cut} of all ${S.n} hit the limit`,
           W / 2,
           H - 8,
           C.mute,
@@ -444,7 +444,8 @@ function downProjAnim(canvas) {
   const STEP = 0.9,
     HOLD = 3,
     CYCLE = N * STEP + HOLD;
-  const cellFor = (W) => Math.min(32, (W - 120) / (N + 5));
+  const narrowAt = 520;
+  const cellFor = (W) => (W < narrowAt ? Math.min(28, (W - 40) / (N + 4.4)) : Math.min(32, (W - 120) / (N + 5)));
   const TOP = 64;
   const cellColor = (v, a) => (v >= 0 ? rgb(COOL, a) : rgb(MID, a));
   // final output, for scaling the bars
@@ -453,14 +454,15 @@ function downProjAnim(canvas) {
 
   run(
     canvas,
-    (W) => TOP + R * cellFor(W) + 34,
+    (W) => TOP + R * cellFor(W) + (W < narrowAt ? 52 : 34),
     (ctx, W, H, now) => {
       const C = colors();
       const t = REDUCE ? CYCLE - 0.1 : (now / 1000) % CYCLE;
+      const narrow = W < narrowAt;
       const cell = cellFor(W);
       const k = Math.min(N, Math.floor(t / STEP)); // terms fully added
       const kf = k < N ? ease(seg(t - k * STEP, 0.1, STEP * 0.85)) : 0;
-      const gap = cell * 2.2;
+      const gap = cell * (narrow ? 1.4 : 2.2);
       const mx = (W - (N * cell + gap + cell * 3)) / 2,
         my = TOP;
       const ox = mx + N * cell + gap,
@@ -473,7 +475,9 @@ function downProjAnim(canvas) {
       ctx.font = SERIF_I;
       const tw = terms.reduce((a, s) => a + ctx.measureText(s).width, 0);
       let ex = (W - tw) / 2;
-      terms.forEach((s, i) => {
+      // too wide to write out every term: use the summation form
+      if (tw > W - 8) label(ctx, "Wh = Σⱼ hⱼ wⱼ", W / 2, 14, C.fg, SERIF_I, "center");
+      else terms.forEach((s, i) => {
         const j = (i - 2) / 2;
         const active = Number.isInteger(j) && j === k && k < N;
         const done = Number.isInteger(j) && j < k;
@@ -487,8 +491,10 @@ function downProjAnim(canvas) {
         const cx = mx + j * cell + cell / 2;
         const v = HV[j];
         const active = j === k && k < N;
-        const txt = v === 0 ? "0" : (v > 0 ? "" : "−") + Math.abs(v).toFixed(1);
-        label(ctx, txt, cx, my - 18, active ? C.fg : v === 0 ? C.mute : cellColor(v), active ? MONO_B : MONO_S, "center");
+        const num = Math.abs(v).toFixed(1);
+        const txt = v === 0 ? "0" : (v > 0 ? "" : "−") + (narrow ? num.slice(1) : num);
+        const small = narrow ? "9.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" : MONO_S;
+        label(ctx, txt, cx, my - 18, active ? C.fg : v === 0 ? C.mute : cellColor(v), active ? (narrow ? "600 " + small : MONO_B) : small, "center");
       }
       label(ctx, "W", mx - 8, my + (R * cell) / 2, C.mute, SERIF_I, "right");
 
@@ -505,7 +511,7 @@ function downProjAnim(canvas) {
           ctx.lineWidth = 1.5;
           ctx.strokeRect(mx + j * cell + 0.5, my + 0.5, cell - 1, R * cell - 1);
         }
-        label(ctx, `w${sub(j + 1)}`, mx + j * cell + cell / 2, my + R * cell + 12, j === k && k < N ? C.fg : C.mute, SERIF_I, "center");
+        label(ctx, `w${sub(j + 1)}`, mx + j * cell + cell / 2, my + R * cell + 12, j === k && k < N ? C.fg : C.mute, narrow ? "italic 12px ui-serif, Georgia, Cambria, Times New Roman, serif" : SERIF_I, "center");
       }
 
       // output: running sum, bars around a zero line
@@ -515,7 +521,7 @@ function downProjAnim(canvas) {
         if (k < N) acc += HV[k] * Wm[i][k] * kf;
         return acc;
       });
-      label(ctx, "Wh  (added to x)", oc, my - 18, C.mute, SANS_S, "center");
+      label(ctx, narrow ? "Wh" : "Wh  (added to x)", oc, my - 18, C.mute, SANS_S, "center");
       for (let i = 0; i < R; i++) {
         ctx.fillStyle = C.soft;
         ctx.fillRect(ox, my + i * cell + 1, ow, cell - 2);
@@ -543,7 +549,8 @@ function downProjAnim(canvas) {
       }
       const note =
         k < N ? (HV[k] === 0 ? `h${sub(k + 1)} = 0, so w${sub(k + 1)} adds nothing` : `adding h${sub(k + 1)} · w${sub(k + 1)}`) : "done: a weighted sum of the columns";
-      label(ctx, note, oc, my + R * cell + 12, C.fg, SANS_S, "center");
+      if (narrow) label(ctx, note, W / 2, my + R * cell + 34, C.fg, SANS_S, "center");
+      else label(ctx, note, oc, my + R * cell + 12, C.fg, SANS_S, "center");
     },
   );
 }
@@ -569,15 +576,23 @@ function loopDirectionAnim(canvas) {
     trace.push({ p, loop: i >= 32 });
   }
   const CYCLE = 13;
+  // fit the plot to its points, leaving room for the formula above and the labels below
+  const pts = [...prod, ...trace.map((d) => d.p)];
+  const xs = pts.map((q) => q[0]),
+    ys = pts.map((q) => q[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs) - 0.2, Math.max(...xs) + 0.2, Math.min(...ys) - 0.2, Math.max(...ys) + 0.2];
+  const TOPPAD = 14,
+    BOTPAD = 34;
   run(
     canvas,
-    (W) => Math.min(320, Math.max(240, W * 0.5)),
+    // tall enough for the plot to use the full width, capped on wide screens
+    (W) => Math.min(320, Math.round(((W - 16) / (x1 - x0)) * (y1 - y0) + TOPPAD + BOTPAD)),
     (ctx, W, H, now) => {
       const C = colors();
       const t = REDUCE ? CYCLE - 0.5 : (now / 1000) % CYCLE;
-      const S = Math.min((W - 40) / 6.6, (H - 50) / 4);
-      const cx = W / 2 - 0.8 * S,
-        cy = H / 2 + 0.45 * S;
+      const S = Math.min((W - 16) / (x1 - x0), (H - TOPPAD - BOTPAD) / (y1 - y0));
+      const cx = W / 2 - ((x0 + x1) / 2) * S,
+        cy = TOPPAD + (H - TOPPAD - BOTPAD) / 2 + ((y0 + y1) / 2) * S;
       const X = (q) => [cx + q[0] * S, cy - q[1] * S];
 
       for (const q of prod) {
@@ -603,7 +618,7 @@ function loopDirectionAnim(canvas) {
         ctx.arc(x, y, i === n - 1 ? 4 : 2.8, 0, Math.PI * 2);
         ctx.fill();
       }
-      label(ctx, "productive tokens", X([0, -1.6])[0], X([0, -1.6])[1], rgb(COOL), SANS_S, "center");
+      label(ctx, "productive tokens", X([0, 0])[0], H - 20, rgb(COOL), SANS_S, "center");
       if (n > 45) label(ctx, "looping tokens", X(LOOP_C)[0], X([0, LOOP_C[1] - 0.75])[1], rgb(HOT), SANS_S, "center");
 
       // difference of means
@@ -625,10 +640,9 @@ function loopDirectionAnim(canvas) {
           ctx.lineWidth = 2;
           ctx.stroke();
         }
-        label(ctx, "u = mean(looping) − mean(productive)", (ax + bx) / 2, Math.min(ay, by) - 22, C.fg, SANS_B, "center");
+        label(ctx, "u = mean(looping) − mean(productive)", (ax + bx) / 2 - 24, Math.max(10, Math.min(ay, by) - 30), C.fg, SANS_B, "center");
         ctx.globalAlpha = 1;
       }
-      label(ctx, "illustration: residual stream projected to 2D", W - 4, H - 8, C.mute, SANS_S, "right");
     },
   );
 }
@@ -666,7 +680,8 @@ function flipAnim(canvas) {
       ctx.lineTo(X(1.8, 0)[0], oy);
       ctx.stroke();
       arrow(ctx, ox, oy, X(1, 0)[0], oy, rgb(HOT), 2.4, 8);
-      label(ctx, "u (loop direction)", X(1, 0)[0] + 6, oy + 14, rgb(HOT), SANS_S, "left");
+      if (X(1, 0)[0] + 110 < W) label(ctx, "u (loop direction)", X(1, 0)[0] + 6, oy + 14, rgb(HOT), SANS_S, "left");
+      else label(ctx, "u", X(1, 0)[0] + 4, oy - 10, rgb(HOT), SERIF_I, "left");
 
       // original column, faded
       const [gx, gy] = X(A, B);
@@ -720,22 +735,12 @@ const PHASES = [
   { a: 2.33, b: 10.03, name: "find v (dose)", sub: "~8 h · 28 passes", c: COOL },
   { a: 10.03, b: END_H, name: "confirm", sub: "17 passes, no changes", c: [170, 165, 158] },
 ];
-// accuracy Astra measured on GSM8K/MATH training problems (base ~9%); each on a different batch
-const DOSE = [
-  { h: 3.35, acc: 33, l: "1×", at: "a" },
-  { h: 6.08, acc: 43, l: "2×", at: "l" },
-  { h: 6.74, acc: 48, l: "3×", at: "a" },
-  { h: 7.88, acc: 12.5, l: "random", ctrl: true, at: "l" },
-  { h: 8.41, acc: 37, l: "top-64, 4×", at: "b" },
-  { h: 8.97, acc: 55, l: "top-64, 6×", at: "r" },
-  { h: 9.84, acc: 62.5, l: "fresh batch", at: "r" },
-];
-
 function timelineAnim(canvas, lp) {
-  const CYCLE = lp ? 9 : 13;
+  const CYCLE = lp ? 9 : 12;
+  const TH = 128;
   run(
     canvas,
-    (W) => (lp ? 170 : W < 560 ? 270 : 250),
+    () => (lp ? 170 : TH),
     (ctx, W, H, now) => {
       const C = colors();
       const t = REDUCE ? CYCLE - 0.5 : (now / 1000) % CYCLE;
@@ -746,9 +751,25 @@ function timelineAnim(canvas, lp) {
 
       if (lp) return timelineLP(ctx, W, H, t, C, (h) => x0 + (h / 13.5) * (x1 - x0), x0, x1);
 
-      const play = REDUCE ? END_H : ease(seg(t, 0.3, 10)) * END_H;
+      const play = REDUCE ? END_H : ease(seg(t, 0.3, 9)) * END_H;
       const BY = 58,
         BH = 16;
+      const hatch = (x, y, w, h) => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        ctx.strokeStyle = rgb([255, 255, 255], 0.7);
+        ctx.lineWidth = 2;
+        for (let hx = x - h; hx < x + w; hx += 7) {
+          ctx.beginPath();
+          ctx.moveTo(hx, y + h);
+          ctx.lineTo(hx + h, y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      };
+
       // bar
       for (const p of PHASES) {
         ctx.fillStyle = rgb(p.c, 0.18);
@@ -759,21 +780,8 @@ function timelineAnim(canvas, lp) {
           ctx.fillRect(sx(p.a), BY, sx(e) - sx(p.a) - (e === p.b ? 1 : 0), BH);
         }
       }
-      // outage
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(sx(15.3), BY, sx(20.0) - sx(15.3), BH);
-      ctx.clip();
-      ctx.strokeStyle = rgb([255, 255, 255], 0.7);
-      ctx.lineWidth = 2;
-      for (let x = sx(15.3) - BH; x < sx(20.0); x += 7) {
-        ctx.beginPath();
-        ctx.moveTo(x, BY + BH);
-        ctx.lineTo(x + BH, BY);
-        ctx.stroke();
-      }
-      ctx.restore();
-      if (play > 16) label(ctx, "outage", (sx(15.3) + sx(20)) / 2, BY + BH / 2 + 1, C.fg, SANS_S, "center");
+      hatch(sx(15.3), BY, sx(20.0) - sx(15.3), BH); // the outage, explained in the legend
+
       // pass ticks
       let passes = 0;
       PASS_H.forEach((h) => {
@@ -782,68 +790,50 @@ function timelineAnim(canvas, lp) {
         ctx.fillStyle = C.fg;
         ctx.fillRect(sx(h) - 0.5, BY - 7, 1.2, 5);
       });
-      // phase labels: the two short phases get a key line above the bar
+
+      // legend: the two short phases, and the outage
+      const keys = [
+        { c: PHASES[0].c, txt: narrow ? "find u: 15 min" : `find u: ${PHASES[0].sub}` },
+        { c: PHASES[1].c, txt: narrow ? "pick layers: 2 h" : `pick layers: ${PHASES[1].sub}` },
+        { c: PHASES[3].c, txt: "4.7 h outage", hatch: true },
+      ];
+      let kx = x0;
+      ctx.font = SANS_S;
+      for (const k of keys) {
+        ctx.fillStyle = rgb(k.c, 0.85);
+        rrect(ctx, kx, 31, 10, 10, 2);
+        ctx.fill();
+        if (k.hatch) hatch(kx, 31, 10, 10);
+        label(ctx, k.txt, kx + 15, 36, C.mute, SANS_S);
+        ctx.font = SANS_S;
+        kx += 15 + ctx.measureText(k.txt).width + 14;
+      }
+      if (!narrow) label(ctx, "ticks: counted forward passes", x1, 36, C.mute, SANS_S, "right");
+
+      // the two long phases, named under the bar
       PHASES.slice(2).forEach((p) => {
         if (play < p.a) return;
         const cx = (sx(p.a) + sx(p.b)) / 2;
         label(ctx, p.name, cx, BY + BH + 14, rgb(p.c), SANS_B, "center");
         label(ctx, p.sub, cx, BY + BH + 29, C.mute, SANS_S, "center");
       });
-      let kx = x0;
-      for (const p of PHASES.slice(0, 2)) {
-        if (play < p.a) break;
-        ctx.fillStyle = rgb(p.c, 0.85);
-        rrect(ctx, kx, 31, 10, 10, 2);
-        ctx.fill();
-        const txt = `${p.name}: ${p.sub}`;
-        label(ctx, txt, kx + 15, 36, C.mute, SANS_S);
-        ctx.font = SANS_S;
-        kx += 15 + ctx.measureText(txt).width + 14;
-      }
+
       // clock
       const hh = Math.floor(play),
         mm = Math.floor((play - hh) * 60);
       label(ctx, `${hh}:${String(mm).padStart(2, "0")} elapsed`, x0, 14, C.fg, MONO);
       label(ctx, `pass ${passes}/50`, x1, 14, C.fg, MONO, "right");
-      if (!narrow) label(ctx, "ticks: counted forward passes", x1, 36, C.mute, SANS_S, "right");
 
-      // dose results under the bar, x aligned with time
-      const PY0 = BY + BH + 52,
-        PY1 = H - 22;
-      const sy = (a) => lerp(PY1, PY0, a / 70);
-      ctx.strokeStyle = C.line;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(sx(2.33), sy(9));
-      ctx.lineTo(sx(10.03), sy(9));
-      ctx.stroke();
-      ctx.setLineDash([]);
-      label(ctx, "base ~9%", sx(2.33) - 4, sy(9), C.mute, SANS_S, "right");
-      label(ctx, "accuracy", x0, sy(50), C.mute, SANS_S);
-      for (const d of DOSE) {
-        if (d.h > play) continue;
-        const x = sx(d.h),
-          y = sy(d.acc);
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = d.ctrl ? C.mute : rgb(COOL);
-        ctx.fill();
-        const show = !narrow || ["1×", "top-64, 6×", "random"].includes(d.l);
-        if (show) {
-          const o = { a: [0, -11, "center"], b: [0, 12, "center"], l: [-7, 0, "right"], r: [7, 0, "left"] }[d.at];
-          label(ctx, `${d.l} ${d.acc}%`, x + o[0], y + o[1], d.ctrl ? C.mute : C.fg, SANS_S, o[2]);
-        }
-      }
+      // the freeze
       if (play > 10.03) {
         ctx.strokeStyle = C.fg;
         ctx.setLineDash([2, 3]);
         ctx.beginPath();
         ctx.moveTo(sx(10.03), BY - 10);
-        ctx.lineTo(sx(10.03), PY1);
+        ctx.lineTo(sx(10.03), H - 4);
         ctx.stroke();
         ctx.setLineDash([]);
-        label(ctx, "edit frozen", sx(10.03) + 5, PY1 - 4, C.fg, SANS_S);
+        label(ctx, "edit frozen", sx(10.03) + 5, H - 9, C.fg, SANS_S);
       }
     },
   );
@@ -865,7 +855,7 @@ function timelineLP(ctx, W, H, t, C, sx, x0, x1) {
     ctx.fillRect(sx(p.a), rows[0].y, sx(p.b) - sx(p.a) - 1, BH);
   }
   label(ctx, "~8 h, 28 passes", (sx(2.33) + sx(10.03)) / 2, rows[0].y + BH / 2 + 1, "#fff", SANS_B, "center");
-  label(ctx, "+ 17 confirmation passes", sx(10.03) + 6, rows[0].y + BH / 2 + 1, C.mute, SANS_S);
+  label(ctx, W < 520 ? "+17 more" : "+ 17 confirmation passes", sx(10.03) + 6, rows[0].y + BH / 2 + 1, C.mute, SANS_S);
   // LP: same u and layers, then the v phase collapses to one solve
   for (const p of astra.slice(0, 2)) {
     ctx.fillStyle = rgb(p.c, 0.35);
@@ -876,7 +866,7 @@ function timelineLP(ctx, W, H, t, C, sx, x0, x1) {
   ctx.fillRect(sx(2.33), rows[1].y, Math.max(3, sx(vEnd) - sx(2.33)), BH);
   if (f > 0.95) {
     arrow(ctx, sx(2.33) + 50, rows[1].y + BH + 18, sx(2.33) + 3, rows[1].y + BH / 2 + 2, C.fg, 1.2, 6);
-    label(ctx, "a couple of LP solves, ~1 min each", sx(2.33) + 54, rows[1].y + BH + 19, C.fg, SANS_B);
+    label(ctx, W < 520 ? "LP solves, ~1 min each" : "a couple of LP solves, ~1 min each", sx(2.33) + 54, rows[1].y + BH + 19, C.fg, SANS_B);
   }
   label(ctx, "(from Astra)", (sx(0) + sx(2.33)) / 2, rows[1].y + BH + 12, C.mute, SANS_S, "center");
   for (const h of [0, 2, 4, 6, 8, 10]) label(ctx, `${h}h`, sx(h), H - 8, C.mute, SANS_S, "center");
@@ -932,8 +922,9 @@ function l1Anim(canvas) {
       ctx.moveTo(...X([0, BOX[2]]));
       ctx.lineTo(...X([0, BOX[3]]));
       ctx.stroke();
-      label(ctx, "v₁ (column 1)", X([BOX[1], 0])[0] - 2, X([0, 0])[1] + 12, C.mute, SANS_S, "right");
-      label(ctx, "v₂ (column 2)", X([0, BOX[3]])[0] + 6, X([0, BOX[3]])[1] + 8, C.mute, SANS_S);
+      const narrow = W < 520;
+      label(ctx, narrow ? "v₁" : "v₁ (column 1)", X([BOX[1], 0])[0] - 2, X([0, 0])[1] + 12, C.mute, SANS_S, "right");
+      label(ctx, narrow ? "v₂" : "v₂ (column 2)", X([0, BOX[3]])[0] + 6, X([0, BOX[3]])[1] + 8, C.mute, SANS_S);
 
       // feasible region
       const fr = ease(seg(t, 4.2, 5));
@@ -963,7 +954,8 @@ function l1Anim(canvas) {
         ctx.stroke();
         if (c.name) {
           const [lx, ly] = X([lerp(pts[0][0], pts[1][0], c.lt), lerp(pts[0][1], pts[1][1], c.lt)]);
-          label(ctx, c.name, lx + (c.dx || 0), ly + (c.dy || 0), ctx.strokeStyle, SANS_S, c.al);
+          const name = narrow ? c.name.split(" ")[0] : c.name;
+          label(ctx, name, lx + (c.dx || 0), ly + (c.dy || 0), ctx.strokeStyle, SANS_S, c.al);
         }
         ctx.globalAlpha = 1;
       });
@@ -979,7 +971,8 @@ function l1Anim(canvas) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        label(ctx, `|v₁| + |v₂| = ${r.toFixed(2)}`, X([0, -r])[0] + 8, X([0, -r])[1] + 10, C.fg, MONO_S);
+        if (narrow) label(ctx, `|v₁| + |v₂| = ${r.toFixed(2)}`, W - 4, 10, C.fg, MONO_S, "right");
+        else label(ctx, `|v₁| + |v₂| = ${r.toFixed(2)}`, X([0, -r])[0] + 8, X([0, -r])[1] + 10, C.fg, MONO_S);
       }
       if (t > 8.1) {
         const [bx, by] = X(best);
@@ -987,8 +980,8 @@ function l1Anim(canvas) {
         ctx.arc(bx, by, 5, 0, Math.PI * 2);
         ctx.fillStyle = C.fg;
         ctx.fill();
-        label(ctx, "first touch: v₂ = 0, column 2 unused", W / 2, H - 8, C.fg, SANS_B, "center");
-      } else label(ctx, "min |v₁| + |v₂|  subject to the token constraints", W / 2, H - 8, C.mute, SANS_S, "center");
+        label(ctx, narrow ? "first touch: v₂ = 0" : "first touch: v₂ = 0, column 2 unused", W / 2, H - 8, C.fg, SANS_B, "center");
+      } else label(ctx, narrow ? "min |v₁| + |v₂|" : "min |v₁| + |v₂|  subject to the token constraints", W / 2, H - 8, C.mute, SANS_S, "center");
     },
   );
 }
@@ -1053,7 +1046,8 @@ function doseAnim(canvas) {
         // dose axis
         const ax0 = 40,
           ax1 = W - 40,
-          sx = (x) => lerp(ax0, ax1, x / 2.5);
+          // on narrow screens the three strengths are evenly spaced so their labels don't collide
+          sx = W < 520 ? (x) => lerp(ax0, ax1, { 0.5: 0.12, 1: 0.5, 2: 0.88 }[x]) : (x) => lerp(ax0, ax1, x / 2.5);
         ctx.strokeStyle = C.line;
         ctx.lineWidth = 2;
         ctx.beginPath();
