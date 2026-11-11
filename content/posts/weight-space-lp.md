@@ -14,6 +14,8 @@ In another experiment, they asked Astra to make Qwen3.5-0.8B better at math by e
 
 Looking at Astra's edit, I realized most of its search was solving a linear program by trial and error. It spent about 8 hours and 28 forward passes choosing which weights to change and by how much. A couple of LP solves, about a minute each, do the same job with 8× fewer changed weights. In this post I'll walk through the edit, why it's an LP, and what that says about the fix itself.
 
+> *This article appeared on Hacker News. Link to the [discussion here](https://news.ycombinator.com/item?id=50452655).*
+
 
 
 ## Thinking loops
