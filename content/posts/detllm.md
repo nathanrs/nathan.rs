@@ -155,7 +155,7 @@ Please cite this work as:
 
 ```
 Barry, Nathan. "Eliminating Nondeterminism in LLM Inference with Integer-Only Arithmetic".
-nathan.rs (Oct 2026). https://nathan.rs/posts/detllm.
+nathan.rs (Nov 2026). https://nathan.rs/posts/detllm.
 ```
 
 Or use the BibTex citation:
@@ -166,7 +166,7 @@ Or use the BibTex citation:
   author  = "Barry, Nathan",
   journal = "nathan.rs",
   year    = "2026",
-  month   = "Oct",
+  month   = "Nov",
   url     = "https://nathan.rs/posts/detllm"
 }
 ```
