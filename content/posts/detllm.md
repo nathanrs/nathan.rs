@@ -8,7 +8,7 @@ hero: "/js/detllm.js"
 heroHeight: 290
 ---
 
-A while back, Thinking Machines published [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), which explained why greedy decoding isn't deterministic on standard inference servers. In theory, at temperature 0 a model always picks its single most likely next token, so the same prompt gives the same answer every time. In practice, when they sent one prompt 1,000 times, they got 80 different answers.[^tm]
+A while back, Thinking Machines published [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), which explained why standard greedy decoding isn't deterministic. In theory, at temperature 0 a model always picks its single most likely next token, so the same prompt gives the same answer every time. In practice, when they sent one prompt 1,000 times, they got 80 different answers.[^tm]
 
 The culprit turned out to be something from an intro CS class: **floating-point addition is not associative**. $(a + b) + c$ and $a + (b + c)$ can round differently. A GPU sums thousands of numbers for every token, and the order it sums them in depends on things like how many other requests are in the batch. Change the order, change the rounding, and occasionally change which token wins.
 
