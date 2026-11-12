@@ -48,7 +48,7 @@ Common frontmatter fields include:
 ```yaml
 title: "Post title"
 date: 2026-01-01
-tags: ["Machine Learning"]
+tags: ["Language Models"]
 description: "Optional subtitle/description shown under the title."
 hero: "/images/example.gif"
 ```

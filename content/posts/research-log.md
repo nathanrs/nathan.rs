@@ -1,8 +1,7 @@
 ---
 title: "Local SGD and DiLoCo Research Musings"
 date: 2025-10-14T10:54:27-05:00
-tags:
-  - "Machine Learning"
+tags: ["Systems & Performance"]
 ---
 
 > Here are some notes I wrote over this topic. I've switched my master's thesis to a different topic, but there were many interesting research directions I found in this area.

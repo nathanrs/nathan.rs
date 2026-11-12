@@ -1,8 +1,7 @@
 ---
 title: "Language Modeling Without Neural Networks"
 date: 2026-01-17T18:47:03-06:00
-tags:
-  - "Machine Learning"
+tags: ["Language Models"]
 featured: true
 hero: "/js/unbounded-n-gram.js"
 heroHeight: 498

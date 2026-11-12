@@ -1,7 +1,7 @@
 ---
 title: "Can a Linear Program Do Weight-Space Programming?"
 date: 2026-11-09T06:17:23-08:00
-tags: ["Machine Learning"]
+tags: ["Language Models"]
 featured: true
 draft: false
 hero: "/js/weight-space-lp.js"

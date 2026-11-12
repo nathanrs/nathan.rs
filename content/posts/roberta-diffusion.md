@@ -1,8 +1,7 @@
 ---
 title: "BERT is just a Single Text Diffusion Step"
 date: 2025-10-20
-tags:
-  - "Machine Learning"
+tags: ["Language Models"]
 featured: true
 hero: "/js/roberta-diffusion.js"
 heroHeight: 244

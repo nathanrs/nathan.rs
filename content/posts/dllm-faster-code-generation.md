@@ -1,8 +1,7 @@
 ---
 title: "Diffusion LLMs are Faster at Writing Code"
 date: 2025-12-13T08:13:54-06:00
-tags:
-  - "Machine Learning"
+tags: ["Language Models"]
 script: "/js/grape.js"
 ---
 
