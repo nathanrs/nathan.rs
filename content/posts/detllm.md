@@ -10,7 +10,7 @@ heroHeight: 290
 
 A while back, Thinking Machines published [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), which explained why greedy decoding isn't deterministic in production. In theory, at temperature 0 a model always picks its single most likely next token, so the same prompt gives the same answer every time. In practice, when they sent one prompt 1,000 times, they got 80 different answers.[^tm]
 
-The culprit turned out to be something from an intro CS class: **floating-point addition is not associative**. $(a + b) + c$ and $a + (b + c)$ can round differently. A GPU sums thousands of numbers for every token, and the order it sums them in depends on things like how many other requests are in the batch. Change the order, change the rounding, and occasionally change which token wins.
+The problem is that **floating-point addition is not associative**. $(a + b) + c$ and $a + (b + c)$ can round differently. A GPU sums thousands of numbers for every token, and the order it sums them in depends on things like how many other requests are in the batch. Change the order, change the rounding, and occasionally change which token wins.
 
 Their fix was to pin the order: rewrite the kernels so that a given GPU always adds numbers in the same order, no matter what else is in the batch. That works, but only on that GPU with those kernels. An H100 and an A100 use different matrix-multiply kernels, a CPU uses different instructions entirely, and each one rounds its own way. Run the same model on all three and you still get three different answers.
 
