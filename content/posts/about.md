@@ -5,15 +5,13 @@ tags:
 ---
 
 
-Hi! My name is **Nathan Barry**.
-
-Outside of school and work, I enjoy [reading](/posts/favorite-books), ballroom dancing, climbing, pickleball, badminton, hiking, playing the guitar, and [photography](https://photos.nathan.rs/)!
+Hi! My name is **Nathan Barry**. I love working on hard problems with great people. Outside of work, I enjoy [reading](/posts/favorite-books), climbing, pickleball, badminton, hiking, ballroom dancing, playing the guitar, and [photography](https://photos.nathan.rs/)!
 
 For information about me, below are a few things I've been doing.
 
 Currently |
 --- | ---
-Aug 2026 - Present | **CEO and Co-Founder** at Tacit Research (YC F26), working on something new!
+Aug 2026 - Present | **CEO and Co-Founder** at **[Tacit Research](https://tacitresearch.com/)** (YC F26), working on software verification and optimization
 
 Previously |
 --- | ---
