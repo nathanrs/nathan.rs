@@ -3,7 +3,6 @@ title: "Device-Independent Neural Compression"
 date: 2026-11-22T10:00:00-08:00
 tags: ["Systems & Performance", "Language Models"]
 featured: true
-draft: true
 hero: "/js/tunazip.js"
 heroHeight: 226
 ---
