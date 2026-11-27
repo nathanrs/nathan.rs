@@ -100,3 +100,6 @@ just by reading through his code,
 even in hexadecimal.
 Mel was, I think, an unsung genius."
 <br>― Ed Nather, The Story of Mel, Appendix A. Hacker Folklore
+
+> "Programming, when stripped of all its circumstantial irrelevancies, boils down to no more and no less than very effective thinking so as to avoid unmastered complexity, to very vigorous separation of your many different concerns."
+<br>— Edsger W. Dijkstra
